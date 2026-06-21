@@ -107,9 +107,6 @@ export function AdminPanel() {
     setImagePreviews((p) => p.filter((_, j) => j !== i));
   };
 
-  const startEdit = (v: ReturnType<typeof allVehicles[0]["tipo"] extends string ? () => (typeof allVehicles)[0] : never>) => { };
-  // Not used — keeping edit inline
-
   const resetForm = () => {
     setForm(EMPTY); setEditId(null); setShowForm(false);
     setUploadedImages([]); setUploadedVideos([]); setImagePreviews([]);
@@ -172,7 +169,7 @@ export function AdminPanel() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const VehicleForm = () => (
+  const vehicleForm = (
     <form onSubmit={handleSubmit} className="mb-8 p-6 rounded-2xl shadow-sm bg-white" style={{ border: "1px solid rgba(0,0,0,0.07)" }}>
       <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "1.1rem", color: "#0d0d14", marginBottom: "20px" }}>
         {editId ? "Editar Vehículo" : "Nuevo Vehículo"}
@@ -245,7 +242,7 @@ export function AdminPanel() {
           <label style={{ ...lbl, marginBottom: "8px" }}>FOTOS ACTUALES</label>
           <div className="flex flex-wrap gap-2">
             {form.gallery_urls.map((url, i) => (
-              <div key={i} className="relative group">
+              <div key={url} className="relative group">
                 <img src={url} alt="" className="w-20 h-20 rounded-xl object-cover border" style={{ borderColor: "rgba(0,0,0,0.1)" }} />
                 <button type="button" onClick={() => setForm((p) => ({ ...p, gallery_urls: p.gallery_urls?.filter((_, j) => j !== i) }))}
                   className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white items-center justify-center hidden group-hover:flex">
@@ -280,7 +277,7 @@ export function AdminPanel() {
         {imagePreviews.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
             {imagePreviews.map((src, i) => (
-              <div key={i} className="relative group">
+              <div key={src.slice(0, 64) + i} className="relative group">
                 <img src={src} alt="" className="w-20 h-20 rounded-xl object-cover border" style={{ borderColor: "rgba(0,0,0,0.1)" }} />
                 {i === 0 && !editId && (
                   <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-white text-[0.55rem]"
@@ -317,7 +314,7 @@ export function AdminPanel() {
         {uploadedVideos.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
             {uploadedVideos.map((f, i) => (
-              <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-xl"
+              <div key={`${f.name}-${f.size}-${i}`} className="flex items-center gap-2 px-3 py-2 rounded-xl"
                 style={{ backgroundColor: "rgba(9,54,179,0.07)", border: "1px solid rgba(9,54,179,0.2)" }}>
                 <Video size={14} style={{ color: "#0936B3" }} />
                 <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.75rem", color: "#0936B3", fontWeight: 600 }}>{f.name}</span>
@@ -406,7 +403,7 @@ export function AdminPanel() {
           </button>
         </div>
 
-        {showForm && <VehicleForm />}
+        {showForm && vehicleForm}
 
         {loading ? (
           <div className="text-center py-16" style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af" }}>Cargando...</div>
