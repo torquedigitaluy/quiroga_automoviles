@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useSiteContent } from "../contexts/SiteContentContext";
 
-import banner1H from "../../imports/Banner_1_horizontal_-_auto_electrico-1.png";
-import banner2H from "../../imports/Banner_2_Horizontal_-_promo_mundialista-1.jpeg";
-import banner3H from "../../imports/Banner_3_Horizontal_-_taller-1.jpeg";
+import banner1H from "../../imports/Banner_1_horizontal_-_auto_electrico-1_fullHD.png";
+import banner2H from "../../imports/Banner_2_Horizontal_-_promo_mundialista-1_fullHD.png";
+import banner3H from "../../imports/Banner_3_Horizontal_-_taller-1_fullHD.png";
 
 import banner1V from "../../imports/Banner_1_vertical_-_auto_electrico-1.jpeg";
 import banner2V from "../../imports/Banner_2_Vertical_-_promo_mundialista-1.jpeg";

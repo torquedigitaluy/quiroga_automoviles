@@ -27,7 +27,7 @@ export function Seguros() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8 max-w-3xl mx-auto">
           {aseguradoras.map((a) => (
             <a key={a.name} href={a.url} target="_blank" rel="noopener noreferrer"
               className="group flex flex-col items-center gap-4 p-5 rounded-2xl border transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-[#0936B3]/25 hover:bg-[#0936B3]/5"

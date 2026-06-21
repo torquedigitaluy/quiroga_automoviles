@@ -124,15 +124,14 @@ export function Footer() {
           <p style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.8rem" }}>
             Uruguay · Ventas · Permutas · Financiación
           </p>
+          <p style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.8rem" }}>
+            sitio web creado por{" "}
+            <a href="https://www.instagram.com/torquedigitaluy/" target="_blank" rel="noopener noreferrer"
+              className="hover:text-[#0936B3] transition-colors" style={{ fontWeight: 600, color: "#6b7280" }}>
+              Torque Digital
+            </a>
+          </p>
         </div>
-
-        <p className="text-center mt-4" style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.8rem" }}>
-          sitio web creado por{" "}
-          <a href="https://www.instagram.com/torquedigitaluy/" target="_blank" rel="noopener noreferrer"
-            className="hover:text-[#0936B3] transition-colors" style={{ fontWeight: 600, color: "#6b7280" }}>
-            Torque Digital
-          </a>
-        </p>
       </div>
     </footer>
   );

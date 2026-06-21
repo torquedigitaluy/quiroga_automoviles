@@ -9,7 +9,7 @@ const USD_PLAZOS = [
   { cuotas: 30, mult: 1.6 },
   { cuotas: 36, mult: 1.72 },
 ];
-const UYU_PLAZOS = [12, 18, 24];
+const UYU_PLAZOS = [12, 15, 18, 24];
 const TITULO_USD = 750;
 
 function calcUSD(monto: number, mult: number, plazo: number) {
@@ -97,7 +97,7 @@ export function CalculadoraFinanciacion() {
               <label className="flex items-center gap-2 mt-3 cursor-pointer" style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.8rem", color: "#374151" }}>
                 <input type="checkbox" checked={incluyeTitulos} onChange={(e) => setIncluyeTitulos(e.target.checked)}
                   style={{ accentColor: "#0936B3", width: "16px", height: "16px" }} />
-                Incluir trámite de titulación (+USD 750)
+                Incluir trámite de titulación
               </label>
             </div>
 

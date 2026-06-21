@@ -22,12 +22,9 @@ export function Financiacion() {
           <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 900, fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "#0d0d14", lineHeight: 0.95, letterSpacing: "-0.01em" }}>
             SIMULÁ TU PRÉSTAMO BANCARIO
           </h2>
-          <p className="mt-3 max-w-lg mx-auto" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, color: "#0d0d14", fontSize: "1rem", lineHeight: 1.6 }}>
-            Financiamos el 100% de tu vehículo hasta en 60 cuotas.
-          </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
           {banks.map((bank) => (
             <a key={bank.name} href={bank.url} target="_blank" rel="noopener noreferrer"
               className="group flex flex-col items-center gap-4 p-5 rounded-2xl border transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-[#0936B3]/25 hover:bg-[#0936B3]/5"
