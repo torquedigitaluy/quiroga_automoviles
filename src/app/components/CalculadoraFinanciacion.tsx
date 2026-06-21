@@ -6,8 +6,11 @@ const USD_PLAZOS = [
   { cuotas: 12, mult: 1.24 },
   { cuotas: 18, mult: 1.36 },
   { cuotas: 24, mult: 1.48 },
+  { cuotas: 30, mult: 1.6 },
+  { cuotas: 36, mult: 1.72 },
 ];
-const UYU_PLAZOS = [12, 15, 18, 24];
+const UYU_PLAZOS = [12, 18, 24];
+const TITULO_USD = 750;
 
 function calcUSD(monto: number, mult: number, plazo: number) {
   return Math.ceil((monto * mult) / plazo);
@@ -19,10 +22,12 @@ function calcUYU(montoUYU: number, plazo: number) {
 export function CalculadoraFinanciacion() {
   const { tipoCambio, setTipoCambio } = useVehicles();
   const [monto, setMonto] = useState("");
+  const [incluyeTitulos, setIncluyeTitulos] = useState(false);
   const [fetchStatus, setFetchStatus] = useState<"idle" | "loading" | "ok" | "err">("idle");
 
   const montoNum = parseFloat(monto) || 0;
-  const montoUYU = montoNum * tipoCambio;
+  const base = montoNum + (incluyeTitulos ? TITULO_USD : 0);
+  const montoUYU = base * tipoCambio;
   const fmt = (n: number) => n.toLocaleString("es-UY");
 
   // Try to fetch BROU USD/UYU rate on mount
@@ -89,6 +94,11 @@ export function CalculadoraFinanciacion() {
                     backgroundColor: "#f4f6fb", border: "1.5px solid #0936B3", borderRadius: "10px",
                     padding: "10px 14px 10px 52px", width: "100%", outline: "none" }} />
               </div>
+              <label className="flex items-center gap-2 mt-3 cursor-pointer" style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.8rem", color: "#374151" }}>
+                <input type="checkbox" checked={incluyeTitulos} onChange={(e) => setIncluyeTitulos(e.target.checked)}
+                  style={{ accentColor: "#0936B3", width: "16px", height: "16px" }} />
+                Incluir trámite de titulación (+USD 750)
+              </label>
             </div>
 
             {/* Tipo de cambio — editable, shows fetch status */}
@@ -120,19 +130,15 @@ export function CalculadoraFinanciacion() {
                     <tr>
                       <th style={th}>CUOTAS</th>
                       <th style={{ ...th, textAlign: "right" as const }}>CUOTA/MES</th>
-                      <th style={{ ...th, textAlign: "right" as const }}>TOTAL</th>
                     </tr>
                   </thead>
                   <tbody>
                     {USD_PLAZOS.map(({ cuotas, mult }) => {
-                      const cuota = calcUSD(montoNum, mult, cuotas);
+                      const cuota = calcUSD(base, mult, cuotas);
                       return (
                         <tr key={cuotas} className="hover:bg-blue-50/30 transition-colors">
                           <td style={td}>{cuotas}x</td>
                           <td style={{ ...tdBold, textAlign: "right" as const }}>USD {fmt(cuota)}</td>
-                          <td style={{ ...td, textAlign: "right" as const, color: "#6b7280", fontSize: "0.78rem" }}>
-                            USD {fmt(cuota * cuotas)}
-                          </td>
                         </tr>
                       );
                     })}
@@ -142,18 +148,14 @@ export function CalculadoraFinanciacion() {
 
               {/* UYU */}
               <div className="p-5">
-                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "0.82rem", color: "#0936B3", marginBottom: "4px" }}>
+                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "0.82rem", color: "#0936B3", marginBottom: "8px" }}>
                   FINANCIACIÓN EN PESOS
-                </p>
-                <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.7rem", color: "#9ca3af", marginBottom: "8px" }}>
-                  Equivale a $ {fmt(Math.round(montoUYU))} (TC: {tipoCambio})
                 </p>
                 <table className="w-full border-collapse">
                   <thead>
                     <tr>
                       <th style={th}>CUOTAS</th>
                       <th style={{ ...th, textAlign: "right" as const }}>CUOTA/MES</th>
-                      <th style={{ ...th, textAlign: "right" as const }}>TOTAL</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -163,9 +165,6 @@ export function CalculadoraFinanciacion() {
                         <tr key={plazo} className="hover:bg-blue-50/30 transition-colors">
                           <td style={td}>{plazo}x</td>
                           <td style={{ ...tdBold, textAlign: "right" as const }}>$ {fmt(cuota)}</td>
-                          <td style={{ ...td, textAlign: "right" as const, color: "#6b7280", fontSize: "0.78rem" }}>
-                            $ {fmt(cuota * plazo)}
-                          </td>
                         </tr>
                       );
                     })}
