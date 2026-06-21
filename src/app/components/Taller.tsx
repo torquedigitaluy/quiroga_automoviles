@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Wrench, MessageCircle, MapPin } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
 const WA_TALLER = "598091888158";
 
@@ -29,9 +29,6 @@ export function Taller() {
     <section id="taller" className="py-20 relative overflow-hidden" style={{ backgroundColor: "#f4f6fb" }}>
       <div className="max-w-3xl mx-auto px-6">
         <div className="mb-10 text-center">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: "rgba(9,54,179,0.1)", color: "#0936B3" }}>
-            <Wrench size={26} />
-          </div>
           <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 900, fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "#0d0d14", lineHeight: 0.95, letterSpacing: "-0.01em" }}>
             Servicio Automotriz
           </h2>
@@ -39,12 +36,6 @@ export function Taller() {
             Contamos con taller especializado en servicio automotriz y mecánica ligera.
             Estamos ubicados en San Luis, Canelones.
           </p>
-          <div className="flex items-center justify-center gap-2 mt-2">
-            <MapPin size={14} style={{ color: "#0936B3" }} />
-            <p style={{ fontFamily: "'Poppins', sans-serif", color: "#0936B3", fontSize: "0.85rem", fontWeight: 600 }}>
-              KM 63.500 — Ruta Interbalnearia
-            </p>
-          </div>
         </div>
 
         <div className="rounded-2xl p-7 shadow-sm" style={{ backgroundColor: "#fff", border: "1px solid rgba(0,0,0,0.07)" }}>

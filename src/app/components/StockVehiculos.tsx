@@ -52,8 +52,8 @@ export function StockVehiculos() {
             VEHÍCULOS
           </h2>
           <a href="/autos"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full border transition-all hover:bg-[#0936B3] hover:text-white hover:border-[#0936B3]"
-            style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.82rem", color: "#0936B3", borderColor: "#0936B3" }}>
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full border transition-all text-[#0936B3] hover:bg-[#0936B3] hover:text-white hover:border-[#0936B3]"
+            style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.82rem", borderColor: "#0936B3" }}>
             Ver Vehículos
           </a>
         </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calculator, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { useVehicles } from "../contexts/VehiclesContext";
 
 const USD_PLAZOS = [
@@ -64,15 +64,8 @@ export function CalculadoraFinanciacion() {
       <div className="max-w-3xl mx-auto px-6">
         {/* Header */}
         <div className="mb-10 text-center">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-            style={{ backgroundColor: "rgba(9,54,179,0.1)", color: "#0936B3" }}>
-            <Calculator size={26} />
-          </div>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.72rem", letterSpacing: "0.2em", color: "#0936B3" }} className="uppercase mb-2">
-            FINANCIACIÓN PROPIA
-          </p>
           <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 900, fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "#0d0d14", lineHeight: 0.95, letterSpacing: "-0.01em" }}>
-            CALCULÁ TU CUOTA
+            FINANCIACIÓN PROPIA
           </h2>
           <p className="mt-3" style={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontSize: "0.88rem" }}>
             Ingresá el monto y calculamos las cuotas en dólares y pesos automáticamente.
@@ -192,7 +185,7 @@ export function CalculadoraFinanciacion() {
               REQUISITOS
             </p>
             <div className="flex flex-wrap gap-x-5 gap-y-1">
-              {["Recibos de sueldo", "Constancia de domicilio", "Segunda firma (familiar o pareja)", "NO importa CLEARING"].map((r) => (
+              {["Recibos de sueldo", "Constancia de domicilio", "Segunda firma (familiar o pareja)", "Cédula de identidad", "NO importa CLEARING"].map((r) => (
                 <span key={r} style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.76rem", color: "#374151" }}>✓ {r}</span>
               ))}
             </div>

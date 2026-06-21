@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Car, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
 const WA_NUMBER = "598092852725";
 
-type TipoOperacion = "venta" | "permuta" | "ambos";
+type TipoOperacion = "venta" | "permuta";
 
 export function CotizadorVehiculo() {
   const [form, setForm] = useState({
@@ -23,8 +23,7 @@ export function CotizadorVehiculo() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const tipoLabel =
-      form.tipo === "venta" ? "Venta" : form.tipo === "permuta" ? "Permuta" : "Venta o Permuta";
+    const tipoLabel = form.tipo === "venta" ? "Venta" : "Permuta";
 
     const msg = `*COTIZACIÓN DE VEHÍCULO*
 
@@ -67,24 +66,6 @@ FOTO: _Enviamos fotos del exterior e interior con buena luz natural._`;
       <div className="max-w-3xl mx-auto px-6">
         {/* Header */}
         <div className="mb-10 text-center">
-          <div
-            className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-            style={{ backgroundColor: "rgba(22,52,212,0.1)", color: "#1634D4" }}
-          >
-            <Car size={26} />
-          </div>
-          <p
-            style={{
-              fontFamily: "'Poppins', sans-serif",
-              fontWeight: 600,
-              fontSize: "0.78rem",
-              letterSpacing: "0.2em",
-              color: "#1634D4",
-            }}
-            className="uppercase mb-3"
-          >
-            VENDÉ O PERMUTÁ
-          </p>
           <h2
             style={{
               fontFamily: "'Poppins', sans-serif",
@@ -198,7 +179,7 @@ FOTO: _Enviamos fotos del exterior e interior con buena luz natural._`;
           <div>
             <label style={labelStyle}>TIPO DE OPERACIÓN *</label>
             <div className="flex flex-wrap gap-3 mt-1">
-              {(["venta", "permuta", "ambos"] as TipoOperacion[]).map((op) => (
+              {(["venta", "permuta"] as TipoOperacion[]).map((op) => (
                 <label
                   key={op}
                   className="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-xl border transition-all"
@@ -220,7 +201,7 @@ FOTO: _Enviamos fotos del exterior e interior con buena luz natural._`;
                     onChange={handleChange}
                     className="sr-only"
                   />
-                  {op === "venta" ? "SOLO VENTA" : op === "permuta" ? "PERMUTA" : "VENTA O PERMUTA"}
+                  {op === "venta" ? "VENTA" : "PERMUTA"}
                 </label>
               ))}
             </div>

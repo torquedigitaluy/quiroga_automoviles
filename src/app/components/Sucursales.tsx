@@ -39,7 +39,7 @@ export function Sucursales() {
         {/* Title only */}
         <div className="mb-12 text-center">
           <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 900, fontSize: "clamp(2rem, 4vw, 3rem)", color: "#0d0d14", lineHeight: 0.95, letterSpacing: "-0.01em" }}>
-            LOCALIDADES
+            UBICACIONES
           </h2>
         </div>
 
@@ -112,8 +112,8 @@ export function Sucursales() {
               Zona América
             </a>
             <a href={WA_SAN_LUIS} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-6 py-3 rounded-full border border-white/40 text-white transition-all hover:bg-white/10 hover:scale-105"
-              style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.9rem" }}>
+              className="flex items-center gap-2 px-6 py-3 rounded-full transition-all hover:scale-105 hover:brightness-110"
+              style={{ backgroundColor: "#25D366", color: "#fff", fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.9rem" }}>
               <MessageCircle size={16} />
               San Luis
             </a>

@@ -19,7 +19,7 @@ export function WelcomePopup() {
       onClick={() => setVisible(false)}
     >
       <div
-        className="relative w-full max-w-sm md:max-w-md rounded-2xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-sm md:max-w-xl lg:max-w-2xl rounded-2xl overflow-hidden shadow-2xl"
         onClick={(e) => e.stopPropagation()}
         style={{ animation: "popupIn 0.3s ease-out" }}
       >

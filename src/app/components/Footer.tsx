@@ -52,7 +52,7 @@ export function Footer() {
                 style={{ borderColor: "rgba(0,0,0,0.14)", color: "#374151" }} aria-label="Facebook">
                 <FBIcon />
               </a>
-              <a href="https://www.tiktok.com/@quirogaautomoviles" target="_blank" rel="noopener noreferrer"
+              <a href="https://www.tiktok.com/@quiroga.automovil" target="_blank" rel="noopener noreferrer"
                 className="w-9 h-9 rounded-lg flex items-center justify-center border transition-colors hover:bg-gray-900 hover:text-white hover:border-gray-900"
                 style={{ borderColor: "rgba(0,0,0,0.14)", color: "#374151" }} aria-label="TikTok">
                 <TTIcon />
@@ -110,7 +110,7 @@ export function Footer() {
                 <a href="https://maps.google.com/?q=Quiroga+Automoviles+San+Luis" target="_blank" rel="noopener noreferrer"
                   style={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontSize: "0.88rem", lineHeight: 1.5 }}
                   className="hover:text-[#0936B3] transition-colors">
-                  Interbalnearia km 63,<br />San Luis, Canelones
+                  Interbalnearia km 63.500,<br />San Luis, Canelones
                 </a>
               </li>
             </ul>
@@ -125,6 +125,14 @@ export function Footer() {
             Uruguay · Ventas · Permutas · Financiación
           </p>
         </div>
+
+        <p className="text-center mt-4" style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.8rem" }}>
+          sitio web creado por{" "}
+          <a href="https://www.instagram.com/torquedigitaluy/" target="_blank" rel="noopener noreferrer"
+            className="hover:text-[#0936B3] transition-colors" style={{ fontWeight: 600, color: "#6b7280" }}>
+            Torque Digital
+          </a>
+        </p>
       </div>
     </footer>
   );
