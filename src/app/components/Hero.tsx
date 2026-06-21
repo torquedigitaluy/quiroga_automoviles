@@ -18,55 +18,37 @@ export function Hero() {
   const [active, setActive] = useState(0);
 
   useEffect(() => {
-    const t = setInterval(() => setActive((i) => (i + 1) % banners.length), 5000);
+    const t = setInterval(() => setActive((i) => (i + 1) % banners.length), 3000);
     return () => clearInterval(t);
   }, []);
 
   return (
-    <section id="inicio" className="relative w-full overflow-hidden" style={{ marginTop: "80px" }}>
-      {/* Slides */}
+    <section
+      id="inicio"
+      className="relative w-full overflow-hidden"
+      style={{ marginTop: "80px", height: "calc(100svh - 80px)" }}
+    >
+      {/* Slides — fill the above-the-fold area, crop edges */}
       {banners.map((b, i) => (
         <div
           key={i}
           className="absolute inset-0 transition-opacity duration-700"
           style={{ opacity: i === active ? 1 : 0, pointerEvents: i === active ? "auto" : "none" }}
         >
-          {/* Desktop — full width, no height cap */}
+          {/* Desktop */}
           <img
             src={b.h}
             alt={b.alt}
-            className="hidden md:block w-full object-cover"
+            className="hidden md:block w-full h-full object-cover"
           />
           {/* Mobile */}
           <img
             src={b.v}
             alt={b.alt}
-            className="block md:hidden w-full object-cover"
-            style={{ maxHeight: "80vh" }}
+            className="block md:hidden w-full h-full object-cover"
           />
         </div>
       ))}
-
-      {/* Height spacer — desktop uses natural image height */}
-      <img src={banners[0].h} alt="" aria-hidden className="hidden md:block w-full invisible" />
-      <img src={banners[0].v} alt="" aria-hidden className="block md:hidden w-full invisible" style={{ maxHeight: "80vh" }} />
-
-      {/* Navigation dots */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-        {banners.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setActive(i)}
-            className="rounded-full transition-all"
-            style={{
-              width: i === active ? "28px" : "8px",
-              height: "8px",
-              backgroundColor: i === active ? "#fff" : "rgba(255,255,255,0.5)",
-            }}
-            aria-label={`Banner ${i + 1}`}
-          />
-        ))}
-      </div>
     </section>
   );
 }
