@@ -34,10 +34,10 @@ export function Hero() {
   return (
     <section
       id="inicio"
-      className="relative w-full overflow-hidden"
-      style={{ marginTop: "80px", height: "calc(100svh - 80px)" }}
+      className="relative w-full overflow-hidden aspect-[9/16] md:aspect-video"
+      style={{ marginTop: "80px" }}
     >
-      {/* Slides — fill the above-the-fold area, crop edges */}
+      {/* Slides — container matches the image aspect ratio, so nothing is cropped */}
       {slides.map((b, i) => (
         <div
           key={i}
