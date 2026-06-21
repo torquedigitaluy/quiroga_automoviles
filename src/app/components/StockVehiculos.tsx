@@ -62,8 +62,8 @@ export function StockVehiculos() {
         <div className="flex flex-wrap items-center gap-3 mb-8 p-4 rounded-2xl" style={{ backgroundColor: "#f4f6fb" }}>
           <div className="flex flex-wrap gap-2">
             {btn("todos", "TODOS")}
-            {btn("nuevo", "0 KM")}
             {btn("usado", "USADOS")}
+            {btn("nuevo", "0 KM")}
             {btn("electrico", "⚡ ELÉCTRICOS")}
           </div>
           <div className="flex items-center gap-3 ml-auto flex-wrap">

@@ -62,7 +62,7 @@ export function VehiculosPage() {
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3 mb-8 p-4 rounded-2xl" style={{ backgroundColor: "#f4f6fb" }}>
           <div className="flex flex-wrap gap-2">
-            {(["todos", "nuevo", "usado"] as const).map((f) => (
+            {(["todos", "usado", "nuevo"] as const).map((f) => (
               <button key={f} onClick={() => setFilterType(f)} style={filterBtnStyle(filterType === f)}>
                 {f === "todos" ? "TODOS" : f === "nuevo" ? "0 KM" : "USADOS"}
               </button>
