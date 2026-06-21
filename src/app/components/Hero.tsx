@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSiteContent } from "../contexts/SiteContentContext";
 
 import banner1H from "../../imports/Banner_1_horizontal_-_auto_electrico-1.png";
 import banner2H from "../../imports/Banner_2_Horizontal_-_promo_mundialista-1.jpeg";
@@ -15,12 +16,20 @@ const banners = [
 ];
 
 export function Hero() {
+  const { hero } = useSiteContent();
   const [active, setActive] = useState(0);
 
+  // Admin-managed images when present, otherwise the default banners.
+  const slides = hero.length
+    ? hero.map((h) => ({ h: h.desktop_url, v: h.mobile_url || h.desktop_url, alt: h.alt }))
+    : banners;
+
   useEffect(() => {
-    const t = setInterval(() => setActive((i) => (i + 1) % banners.length), 3000);
+    setActive(0);
+    if (slides.length <= 1) return;
+    const t = setInterval(() => setActive((i) => (i + 1) % slides.length), 3000);
     return () => clearInterval(t);
-  }, []);
+  }, [slides.length]);
 
   return (
     <section
@@ -29,7 +38,7 @@ export function Hero() {
       style={{ marginTop: "80px", height: "calc(100svh - 80px)" }}
     >
       {/* Slides — fill the above-the-fold area, crop edges */}
-      {banners.map((b, i) => (
+      {slides.map((b, i) => (
         <div
           key={i}
           className="absolute inset-0 transition-opacity duration-700"
