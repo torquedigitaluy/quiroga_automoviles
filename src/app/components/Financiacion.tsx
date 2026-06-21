@@ -3,6 +3,7 @@ import hsbcLogo from "../../imports/HSBC_logo__2018_.png";
 import bbvaLogo from "../../imports/LOGO-BBVA-coreblue_RGB_DDB.png";
 import scotiabankLogo from "../../imports/scotiabanklogo.png";
 import itauLogo from "../../imports/itaulogo.png";
+import cashLogo from "../../imports/cash_logo.png";
 
 const banks = [
   { name: "Santander Mi Auto", logo: santanderLogo, url: "https://www.miauto.com.uy/#simulador" },
@@ -10,6 +11,7 @@ const banks = [
   { name: "BBVA", logo: bbvaLogo, url: "https://simulatuprestamo.bbva.com.uy/#!/automotor" },
   { name: "Scotiabank", logo: scotiabankLogo, url: "https://www.scotiabank.com.uy/Personas/Prestamos/SolicitaloYa/calculadora-de-prestamos" },
   { name: "Itaú", logo: itauLogo, url: "https://www.itau.com.uy/inst/prestamosMiautoCalculador.html" },
+  { name: "Cash", logo: cashLogo, url: "https://prestamocash.com.uy/prestamo" },
 ];
 
 export function Financiacion() {

@@ -4,6 +4,7 @@ import suraLogo from "../../imports/sura.png";
 import portoLogo from "../../imports/Porto-Seguro-Logo.png";
 import sanCristobalLogo from "../../imports/sancristobal.png";
 import mapfreLogo from "../../imports/mapfre_logo.png";
+import sancorLogo from "../../imports/sancor_logo.png";
 
 const WA_SEGUROS = "https://wa.me/598091087058?text=Hola%2C%20quisiera%20cotizar%20un%20seguro%20para%20mi%20veh%C3%ADculo";
 
@@ -13,6 +14,7 @@ const aseguradoras = [
   { name: "Porto Seguro", logo: portoLogo, url: "https://www.portoseguro.com.uy/cotizador-automovil" },
   { name: "San Cristóbal", logo: sanCristobalLogo, url: "https://www.sancristobalseguros.com.uy/corredor/rb-seguros/cotizar" },
   { name: "Mapfre", logo: mapfreLogo, url: "https://mapfre-web.com.uy/formulario_consulta/" },
+  { name: "Sancor Seguros", logo: sancorLogo, url: "https://www.sancorseguros.com.uy/patrimoniales/automotores" },
 ];
 
 export function Seguros() {
