@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { Plus, Trash2, LogOut, Car, Upload, X, ImageIcon, Video, Eye, EyeOff, Star, Edit3, Check } from "lucide-react";
 import { useVehicles, type CreateVehicleData } from "../contexts/VehiclesContext";
+import { SiteContentManager } from "./SiteContentManager";
 import logoImg from "../../imports/LOGO_QUIROGA_AUTOMOVILES.png";
 
 const ADMIN_USER = "quiroga";
@@ -391,6 +392,9 @@ export function AdminPanel() {
             <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.85rem", color: "#0d0d14" }}>UYU</span>
           </div>
         </div>
+
+        {/* Site content (hero + novedades) */}
+        <SiteContentManager />
 
         <div className="flex justify-between items-center mb-6">
           <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "1.5rem", color: "#0d0d14" }}>

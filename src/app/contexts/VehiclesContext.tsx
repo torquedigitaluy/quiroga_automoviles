@@ -72,6 +72,7 @@ interface VehiclesContextType {
   updateVehicle: (id: string, data: Partial<CreateVehicleData & { published: boolean; featured: boolean }>) => Promise<void>;
   deleteVehicle: (id: string) => Promise<void>;
   uploadMedia: (file: File, vehicleId: string) => Promise<string>;
+  deleteMedia: (url: string) => Promise<void>;
   tipoCambio: number;
   setTipoCambio: (v: number) => void;
 }
@@ -100,7 +101,7 @@ export interface CreateVehicleData {
 const VehiclesContext = createContext<VehiclesContextType>({
   vehicles: [], allVehicles: [], loading: false, error: null,
   reload: () => {}, addVehicle: async () => {}, updateVehicle: async () => {},
-  deleteVehicle: async () => {}, uploadMedia: async () => "",
+  deleteVehicle: async () => {}, uploadMedia: async () => "", deleteMedia: async () => {},
   tipoCambio: 43, setTipoCambio: () => {},
 });
 
@@ -165,10 +166,19 @@ export function VehiclesProvider({ children }: { children: ReactNode }) {
     return data.publicUrl;
   };
 
+  // Remove a previously uploaded file from storage given its public URL.
+  const deleteMedia = async (url: string) => {
+    const marker = "/vehicle-media/";
+    const idx = url.indexOf(marker);
+    if (idx === -1) return;
+    const path = url.slice(idx + marker.length);
+    await supabase.storage.from("vehicle-media").remove([path]);
+  };
+
   return (
     <VehiclesContext.Provider value={{
       vehicles, allVehicles, loading, error, reload: load,
-      addVehicle, updateVehicle, deleteVehicle, uploadMedia,
+      addVehicle, updateVehicle, deleteVehicle, uploadMedia, deleteMedia,
       tipoCambio, setTipoCambio: setTipoCambioState,
     }}>
       {children}

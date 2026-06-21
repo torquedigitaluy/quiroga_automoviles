@@ -14,6 +14,7 @@ import { Sucursales } from "./components/Sucursales";
 import { Footer } from "./components/Footer";
 import { WelcomePopup } from "./components/WelcomePopup";
 import { VehiclesProvider } from "./contexts/VehiclesContext";
+import { SiteContentProvider } from "./contexts/SiteContentContext";
 import { VehiculosPage } from "./pages/VehiculosPage";
 import { AdminLogin, AdminPanel } from "./pages/AdminPanel";
 
@@ -66,12 +67,14 @@ export default function App() {
   return (
     <BrowserRouter>
       <VehiclesProvider>
+        <SiteContentProvider>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/autos" element={<VehiculosPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminPanel />} />
         </Routes>
+        </SiteContentProvider>
       </VehiclesProvider>
     </BrowserRouter>
   );
