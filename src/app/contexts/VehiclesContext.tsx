@@ -118,6 +118,23 @@ export function VehiclesProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => { localStorage.setItem("quiroga_tc", String(tipoCambio)); }, [tipoCambio]);
 
+  // tipo de cambio is shared across every visitor — read the value the admin saved in Supabase
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data, error } = await supabase.from("site_content").select("data").eq("key", "tipo_cambio").maybeSingle();
+        if (!error && typeof data?.data?.rate === "number") setTipoCambioState(data.data.rate);
+      } catch {
+        // keep localStorage/default value if the table isn't reachable yet
+      }
+    })();
+  }, []);
+
+  const setTipoCambio = async (v: number) => {
+    setTipoCambioState(v);
+    await supabase.from("site_content").upsert({ key: "tipo_cambio", data: { rate: v }, updated_at: new Date().toISOString() });
+  };
+
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -179,7 +196,7 @@ export function VehiclesProvider({ children }: { children: ReactNode }) {
     <VehiclesContext.Provider value={{
       vehicles, allVehicles, loading, error, reload: load,
       addVehicle, updateVehicle, deleteVehicle, uploadMedia, deleteMedia,
-      tipoCambio, setTipoCambio: setTipoCambioState,
+      tipoCambio, setTipoCambio,
     }}>
       {children}
     </VehiclesContext.Provider>

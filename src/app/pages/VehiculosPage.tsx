@@ -11,9 +11,9 @@ import logoImg from "../../imports/LOGO_QUIROGA_AUTOMOVILES.png";
 function toCarDetail(v: Vehicle): CarDetail {
   return {
     id: typeof v.id === "string" ? parseInt(v.id) || 0 : v.id,
-    name: v.name, year: v.year, price: v.price, km: v.km,
+    name: v.name, year: v.year, price: v.price, moneda: v.moneda, km: v.km,
     fuel: v.fuel, transmission: v.transmission, badge: v.badge,
-    images: v.images, videos: v.videos, features: v.features, whatsappText: v.whatsappText,
+    images: v.images, videos: v.videos, features: v.features, description: v.description, whatsappText: v.whatsappText,
   };
 }
 
@@ -22,11 +22,12 @@ const MAX_PRICE = 80000;
 export function VehiculosPage() {
   const navigate = useNavigate();
   const { vehicles } = useVehicles();
-  const [filterType, setFilterType] = useState<"todos" | "nuevo" | "usado">("todos");
+  const [filterType, setFilterType] = useState<"todos" | "nuevo" | "usado" | "electrico">("todos");
   const [maxPrice, setMaxPrice] = useState(MAX_PRICE);
   const [selectedCar, setSelectedCar] = useState<CarDetail | null>(null);
 
   const filtered = vehicles.filter((v) => {
+    if (filterType === "electrico") return v.fuel === "Eléctrico";
     if (filterType !== "todos" && v.type !== filterType) return false;
     if (v.priceNum > 0 && v.priceNum > maxPrice) return false;
     return true;
@@ -62,9 +63,9 @@ export function VehiculosPage() {
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3 mb-8 p-4 rounded-2xl" style={{ backgroundColor: "#f4f6fb" }}>
           <div className="flex flex-wrap gap-2">
-            {(["todos", "usado", "nuevo"] as const).map((f) => (
+            {(["todos", "usado", "nuevo", "electrico"] as const).map((f) => (
               <button key={f} onClick={() => setFilterType(f)} style={filterBtnStyle(filterType === f)}>
-                {f === "todos" ? "TODOS" : f === "nuevo" ? "0 KM" : "USADOS"}
+                {f === "todos" ? "TODOS" : f === "nuevo" ? "0 KM" : f === "usado" ? "USADOS" : "⚡ ELÉCTRICOS"}
               </button>
             ))}
           </div>

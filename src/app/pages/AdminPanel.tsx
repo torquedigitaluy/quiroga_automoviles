@@ -70,32 +70,50 @@ export function AdminLogin() {
   );
 }
 
+interface ImageItem { id: string; url: string; file?: File }
+
 export function AdminPanel() {
   const navigate = useNavigate();
   const { allVehicles, loading, error, reload, addVehicle, updateVehicle, deleteVehicle, uploadMedia, tipoCambio, setTipoCambio } = useVehicles();
   const [form, setForm] = useState<CreateVehicleData>(EMPTY);
   const [editId, setEditId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState<File[]>([]);
+  const [images, setImages] = useState<ImageItem[]>([]);
   const [uploadedVideos, setUploadedVideos] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
+  const [tcDraft, setTcDraft] = useState<number>(tipoCambio);
+  const [tcSaving, setTcSaving] = useState(false);
   const imgRef = useRef<HTMLInputElement>(null);
   const vidRef = useRef<HTMLInputElement>(null);
+  const dragIndexRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!sessionStorage.getItem("quiroga_admin")) navigate("/admin/login");
   }, [navigate]);
 
+  useEffect(() => { setTcDraft(tipoCambio); }, [tipoCambio]);
+
   const notify = (m: string) => { setMsg(m); setTimeout(() => setMsg(""), 3500); };
+
+  const handleUpdateTipoCambio = async () => {
+    setTcSaving(true);
+    try {
+      await setTipoCambio(tcDraft);
+      notify("Tipo de cambio actualizado.");
+    } catch {
+      notify("Error al actualizar el tipo de cambio.");
+    } finally {
+      setTcSaving(false);
+    }
+  };
 
   const handleImageFiles = async (files: FileList | null) => {
     if (!files) return;
     const arr = Array.from(files).filter((f) => f.type.startsWith("image/"));
     const previews = await Promise.all(arr.map(fileToBase64));
-    setUploadedImages((p) => [...p, ...arr]);
-    setImagePreviews((p) => [...p, ...previews]);
+    const items: ImageItem[] = arr.map((file, i) => ({ id: crypto.randomUUID(), url: previews[i], file }));
+    setImages((p) => [...p, ...items]);
   };
 
   const handleVideoFiles = (files: FileList | null) => {
@@ -103,32 +121,47 @@ export function AdminPanel() {
     setUploadedVideos((p) => [...p, ...Array.from(files).filter((f) => f.type.startsWith("video/"))]);
   };
 
-  const removeImg = (i: number) => {
-    setUploadedImages((p) => p.filter((_, j) => j !== i));
-    setImagePreviews((p) => p.filter((_, j) => j !== i));
+  const removeImg = (id: string) => {
+    setImages((p) => p.filter((img) => img.id !== id));
+  };
+
+  const handleImgDragStart = (i: number) => { dragIndexRef.current = i; };
+  const handleImgDragOver = (e: React.DragEvent) => e.preventDefault();
+  const handleImgDrop = (i: number) => {
+    const from = dragIndexRef.current;
+    dragIndexRef.current = null;
+    if (from === null || from === i) return;
+    setImages((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(i, 0, moved);
+      return next;
+    });
   };
 
   const resetForm = () => {
     setForm(EMPTY); setEditId(null); setShowForm(false);
-    setUploadedImages([]); setUploadedVideos([]); setImagePreviews([]);
+    setImages([]); setUploadedVideos([]);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (uploadedImages.length === 0 && !editId) { notify("Agregá al menos una foto."); return; }
+    if (images.length === 0 && !editId) { notify("Agregá al menos una foto."); return; }
     setSaving(true);
     try {
       const vehicleId = editId ?? crypto.randomUUID();
-      // Upload images
-      const newImageUrls = await Promise.all(uploadedImages.map((f) => uploadMedia(f, vehicleId)));
+      // Upload new images (in display order) and keep existing URLs in place
+      const orderedImageUrls = await Promise.all(
+        images.map((img) => (img.file ? uploadMedia(img.file, vehicleId) : Promise.resolve(img.url)))
+      );
       // Upload videos
       const newVideoUrls = await Promise.all(uploadedVideos.map((f) => uploadMedia(f, vehicleId)));
 
       const payload: CreateVehicleData = {
         ...form,
         price_num: parseFloat(form.price.replace(/[^0-9.]/g, "")) || 0,
-        cover_image_url: newImageUrls[0] ?? form.cover_image_url ?? "",
-        gallery_urls: newImageUrls.length > 0 ? newImageUrls : (form.gallery_urls ?? []),
+        cover_image_url: orderedImageUrls[0] ?? "",
+        gallery_urls: orderedImageUrls,
         video_urls: newVideoUrls.length > 0 ? [...(form.video_urls ?? []), ...newVideoUrls] : (form.video_urls ?? []),
       };
 
@@ -165,6 +198,7 @@ export function AdminPanel() {
       cover_image_url: v.images[0] ?? "",
       gallery_urls: v.images, video_urls: v.videos,
     });
+    setImages(v.images.map((url) => ({ id: url, url })));
     setEditId(v.id);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -237,29 +271,13 @@ export function AdminPanel() {
           rows={3} style={{ ...inp, resize: "vertical" }} placeholder="Descripción del vehículo..." />
       </div>
 
-      {/* Existing images (edit mode) */}
-      {editId && form.gallery_urls && form.gallery_urls.length > 0 && (
-        <div className="mb-4">
-          <label style={{ ...lbl, marginBottom: "8px" }}>FOTOS ACTUALES</label>
-          <div className="flex flex-wrap gap-2">
-            {form.gallery_urls.map((url, i) => (
-              <div key={url} className="relative group">
-                <img src={url} alt="" className="w-20 h-20 rounded-xl object-cover border" style={{ borderColor: "rgba(0,0,0,0.1)" }} />
-                <button type="button" onClick={() => setForm((p) => ({ ...p, gallery_urls: p.gallery_urls?.filter((_, j) => j !== i) }))}
-                  className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white items-center justify-center hidden group-hover:flex">
-                  <X size={10} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Image upload */}
+      {/* Image upload + gallery (drag thumbnails to reorder) */}
       <div className="mb-4">
         <label style={{ ...lbl, marginBottom: "8px" }}>
-          {editId ? "AGREGAR MÁS FOTOS" : "FOTOS *"}
-          <span style={{ color: "#9ca3af", fontWeight: 400, marginLeft: "6px" }}>(desde tu computadora o celular)</span>
+          {editId ? "FOTOS" : "FOTOS *"}
+          <span style={{ color: "#9ca3af", fontWeight: 400, marginLeft: "6px" }}>
+            (desde tu computadora o celular — arrastrá una foto sobre otra para cambiar el orden)
+          </span>
         </label>
         <div className="border-2 border-dashed rounded-xl p-5 text-center cursor-pointer hover:border-[#0936B3] hover:bg-blue-50/30 transition-colors"
           style={{ borderColor: "rgba(0,0,0,0.12)", backgroundColor: "#f9fafb" }}
@@ -275,18 +293,22 @@ export function AdminPanel() {
           </p>
         </div>
         <input ref={imgRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleImageFiles(e.target.files)} />
-        {imagePreviews.length > 0 && (
+        {images.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
-            {imagePreviews.map((src, i) => (
-              <div key={src.slice(0, 64) + i} className="relative group">
-                <img src={src} alt="" className="w-20 h-20 rounded-xl object-cover border" style={{ borderColor: "rgba(0,0,0,0.1)" }} />
-                {i === 0 && !editId && (
+            {images.map((img, i) => (
+              <div key={img.id} className="relative group cursor-move"
+                draggable
+                onDragStart={() => handleImgDragStart(i)}
+                onDragOver={handleImgDragOver}
+                onDrop={() => handleImgDrop(i)}>
+                <img src={img.url} alt="" className="w-20 h-20 rounded-xl object-cover border" style={{ borderColor: "rgba(0,0,0,0.1)" }} />
+                {i === 0 && (
                   <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-white text-[0.55rem]"
                     style={{ backgroundColor: "#0936B3", fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}>
                     PORTADA
                   </span>
                 )}
-                <button type="button" onClick={() => removeImg(i)}
+                <button type="button" onClick={() => removeImg(img.id)}
                   className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white items-center justify-center hidden group-hover:flex">
                   <X size={10} />
                 </button>
@@ -383,13 +405,18 @@ export function AdminPanel() {
         <div className="mb-6 p-4 rounded-2xl flex flex-wrap items-center gap-4 bg-white" style={{ border: "1px solid rgba(0,0,0,0.07)" }}>
           <div className="flex-1">
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.72rem", letterSpacing: "0.1em", color: "#6b7280" }}>TIPO DE CAMBIO USD → UYU</p>
-            <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.7rem", color: "#9ca3af" }}>Usado en la calculadora de financiación. Se actualiza automáticamente.</p>
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.7rem", color: "#9ca3af" }}>Usado en la calculadora de financiación propia. Hacé clic en Actualizar para aplicar el valor en toda la página.</p>
           </div>
           <div className="flex items-center gap-2">
             <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.85rem", color: "#0d0d14" }}>1 USD =</span>
-            <input type="number" value={tipoCambio} onChange={(e) => setTipoCambio(+e.target.value)}
+            <input type="number" value={tcDraft} onChange={(e) => setTcDraft(+e.target.value)}
               style={{ ...inp, width: "88px", border: "1.5px solid #0936B3", fontWeight: 700, color: "#0936B3" }} />
             <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.85rem", color: "#0d0d14" }}>UYU</span>
+            <button type="button" onClick={handleUpdateTipoCambio} disabled={tcSaving || tcDraft === tipoCambio}
+              className="px-4 py-2 rounded-lg transition-all hover:brightness-110 disabled:opacity-50"
+              style={{ backgroundColor: "#0936B3", color: "#fff", fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.78rem" }}>
+              {tcSaving ? "ACTUALIZANDO..." : "ACTUALIZAR"}
+            </button>
           </div>
         </div>
 
@@ -400,7 +427,7 @@ export function AdminPanel() {
           <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "1.5rem", color: "#0d0d14" }}>
             Vehículos ({allVehicles.length})
           </h1>
-          <button onClick={() => { setEditId(null); setForm(EMPTY); setImagePreviews([]); setUploadedImages([]); setUploadedVideos([]); setShowForm((v) => !v); }}
+          <button onClick={() => { setEditId(null); setForm(EMPTY); setImages([]); setUploadedVideos([]); setShowForm((v) => !v); }}
             className="flex items-center gap-2 px-5 py-2.5 rounded-full hover:brightness-110 transition-all"
             style={{ backgroundColor: "#0936B3", color: "#fff", fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.85rem" }}>
             <Plus size={16} /> AGREGAR VEHÍCULO

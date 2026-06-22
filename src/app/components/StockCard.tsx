@@ -56,7 +56,7 @@ export function StockCard({ vehicle, onOpen }: Props) {
           </h3>
           {vehicle.price && (
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "1rem", color: "#0d0d14", marginTop: "2px" }}>
-              {vehicle.price}
+              {vehicle.moneda} {vehicle.price}
             </p>
           )}
           <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.72rem", color: "#9ca3af", marginTop: "2px" }}>
@@ -85,15 +85,15 @@ export function StockCard({ vehicle, onOpen }: Props) {
             onClick={(e) => e.stopPropagation()}
             className="flex items-center justify-between px-3 py-2 rounded-xl hover:brightness-95 transition-all"
             style={{ backgroundColor: "#f0f9f4", border: "1px solid rgba(37,211,102,0.2)" }}>
-            <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.7rem", color: "#374151" }}>Zona América</span>
-            <span className="flex items-center gap-1" style={{ color: "#25D366" }}><WAIcon /><span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.7rem" }}>099802299</span></span>
+            <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.7rem", color: "#374151" }}>Zonamerica</span>
+            <span className="flex items-center gap-1" style={{ color: "#25D366" }}><WAIcon /></span>
           </a>
           <a href={`https://wa.me/598091644585?text=${waText}`} target="_blank" rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
             className="flex items-center justify-between px-3 py-2 rounded-xl hover:brightness-95 transition-all"
             style={{ backgroundColor: "#f0f9f4", border: "1px solid rgba(37,211,102,0.2)" }}>
             <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.7rem", color: "#374151" }}>San Luis</span>
-            <span className="flex items-center gap-1" style={{ color: "#25D366" }}><WAIcon /><span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.7rem" }}>091644585</span></span>
+            <span className="flex items-center gap-1" style={{ color: "#25D366" }}><WAIcon /></span>
           </a>
         </div>
       </div>

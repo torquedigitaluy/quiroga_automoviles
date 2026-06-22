@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { RefreshCw } from "lucide-react";
+import { useState } from "react";
 import { useVehicles } from "../contexts/VehiclesContext";
 
 const USD_PLAZOS = [
@@ -20,38 +19,14 @@ function calcUYU(montoUYU: number, plazo: number) {
 }
 
 export function CalculadoraFinanciacion() {
-  const { tipoCambio, setTipoCambio } = useVehicles();
+  const { tipoCambio } = useVehicles();
   const [monto, setMonto] = useState("");
   const [incluyeTitulos, setIncluyeTitulos] = useState(false);
-  const [fetchStatus, setFetchStatus] = useState<"idle" | "loading" | "ok" | "err">("idle");
 
   const montoNum = parseFloat(monto) || 0;
   const base = montoNum + (incluyeTitulos ? TITULO_USD : 0);
   const montoUYU = base * tipoCambio;
   const fmt = (n: number) => n.toLocaleString("es-UY");
-
-  // Try to fetch BROU USD/UYU rate on mount
-  useEffect(() => {
-    const fetchRate = async () => {
-      setFetchStatus("loading");
-      try {
-        // Use open.er-api.com — free, no API key, supports UYU
-        const res = await fetch("https://open.er-api.com/v6/latest/USD");
-        if (!res.ok) throw new Error("no ok");
-        const data = await res.json();
-        const rate = data?.rates?.UYU;
-        if (rate && rate > 1) {
-          setTipoCambio(Math.round(rate));
-          setFetchStatus("ok");
-        } else {
-          setFetchStatus("err");
-        }
-      } catch {
-        setFetchStatus("err");
-      }
-    };
-    fetchRate();
-  }, []);
 
   const th: React.CSSProperties = {
     fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.7rem",
@@ -79,42 +54,25 @@ export function CalculadoraFinanciacion() {
 
         <div className="rounded-2xl shadow-sm overflow-hidden" style={{ backgroundColor: "#fff", border: "1px solid rgba(0,0,0,0.07)" }}>
           {/* Inputs */}
-          <div className="p-6 border-b flex flex-col sm:flex-row gap-4" style={{ borderColor: "rgba(0,0,0,0.07)" }}>
-            <div className="flex-1">
-              <label style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.7rem", letterSpacing: "0.1em", color: "#6b7280", display: "block", marginBottom: "6px" }}>
-                MONTO A FINANCIAR (USD)
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2"
-                  style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, color: "#0936B3", fontSize: "0.9rem" }}>
-                  USD
-                </span>
-                <input type="number" value={monto} onChange={(e) => setMonto(e.target.value)} placeholder="Ej: 5000"
-                  style={{ fontFamily: "'Poppins', sans-serif", fontSize: "1.05rem", fontWeight: 700, color: "#0d0d14",
-                    backgroundColor: "#f4f6fb", border: "1.5px solid #0936B3", borderRadius: "10px",
-                    padding: "10px 14px 10px 52px", width: "100%", outline: "none" }} />
-              </div>
-              <label className="flex items-center gap-2 mt-3 cursor-pointer" style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.8rem", color: "#374151" }}>
-                <input type="checkbox" checked={incluyeTitulos} onChange={(e) => setIncluyeTitulos(e.target.checked)}
-                  style={{ accentColor: "#0936B3", width: "16px", height: "16px" }} />
-                Incluir trámite de titulación
-              </label>
+          <div className="p-6 border-b" style={{ borderColor: "rgba(0,0,0,0.07)" }}>
+            <label style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.7rem", letterSpacing: "0.1em", color: "#6b7280", display: "block", marginBottom: "6px" }}>
+              MONTO A FINANCIAR (USD)
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2"
+                style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, color: "#0936B3", fontSize: "0.9rem" }}>
+                USD
+              </span>
+              <input type="number" value={monto} onChange={(e) => setMonto(e.target.value)} placeholder="Ej: 5000"
+                style={{ fontFamily: "'Poppins', sans-serif", fontSize: "1.05rem", fontWeight: 700, color: "#0d0d14",
+                  backgroundColor: "#f4f6fb", border: "1.5px solid #0936B3", borderRadius: "10px",
+                  padding: "10px 14px 10px 52px", width: "100%", outline: "none" }} />
             </div>
-
-            {/* Tipo de cambio — editable, shows fetch status */}
-            <div className="sm:w-52">
-              <label style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.7rem", letterSpacing: "0.1em", color: "#6b7280", display: "block", marginBottom: "6px" }}>
-                TIPO DE CAMBIO (USD→UYU)
-                {fetchStatus === "ok" && <span style={{ color: "#16a34a", marginLeft: "6px" }}>● BROU</span>}
-                {fetchStatus === "err" && <span style={{ color: "#9ca3af", marginLeft: "6px" }}>● Manual</span>}
-                {fetchStatus === "loading" && <RefreshCw size={10} className="inline ml-1 animate-spin" style={{ color: "#9ca3af" }} />}
-              </label>
-              <input type="number" value={tipoCambio}
-                onChange={(e) => { setTipoCambio(+e.target.value); setFetchStatus("err"); }}
-                style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.95rem", color: "#0d0d14",
-                  backgroundColor: "#f4f6fb", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "10px",
-                  padding: "10px 14px", width: "100%", outline: "none" }} />
-            </div>
+            <label className="flex items-center gap-2.5 mt-4 cursor-pointer" style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.9rem", fontWeight: 600, color: "#374151" }}>
+              <input type="checkbox" checked={incluyeTitulos} onChange={(e) => setIncluyeTitulos(e.target.checked)}
+                style={{ accentColor: "#0936B3", width: "22px", height: "22px", cursor: "pointer" }} />
+              Incluir costo de títulos
+            </label>
           </div>
 
           {/* Results */}

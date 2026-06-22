@@ -87,7 +87,7 @@ FOTO: _Enviamos fotos del exterior e interior con buena luz natural._`;
               lineHeight: 1.7,
             }}
           >
-            Completá el formulario y te respondemos con una valuación sin compromiso.
+            Completá el formulario para obtener tu tasación.
           </p>
         </div>
 
@@ -238,7 +238,7 @@ FOTO: _Enviamos fotos del exterior e interior con buena luz natural._`;
           {/* Submit */}
           <button
             type="submit"
-            className="flex items-center justify-center gap-2 py-3.5 rounded-xl transition-all hover:brightness-110 hover:scale-[1.01] active:scale-[0.99]"
+            className="flex items-center justify-center text-center gap-2 py-3.5 px-4 rounded-xl transition-all hover:brightness-110 hover:scale-[1.01] active:scale-[0.99]"
             style={{
               backgroundColor: "#25D366",
               color: "#fff",
@@ -246,10 +246,11 @@ FOTO: _Enviamos fotos del exterior e interior con buena luz natural._`;
               fontWeight: 800,
               fontSize: "1.05rem",
               letterSpacing: "0.06em",
+              flexWrap: "wrap",
             }}
           >
             <MessageCircle size={19} />
-            ENVIAR COTIZACIÓN POR WHATSAPP
+            <span>ENVIAR COTIZACIÓN</span>
           </button>
         </form>
       </div>

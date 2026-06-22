@@ -117,20 +117,40 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-3" style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }}>
-          <p style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.8rem" }}>
-            © 2025 Quiroga Automóviles. Todos los derechos reservados.
-          </p>
-          <p style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.8rem" }}>
-            Uruguay · Ventas · Permutas · Financiación
-          </p>
-          <p style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.8rem" }}>
-            sitio web creado por{" "}
-            <a href="https://www.instagram.com/torquedigitaluy/" target="_blank" rel="noopener noreferrer"
-              className="hover:text-[#0936B3] transition-colors" style={{ fontWeight: 600, color: "#6b7280" }}>
-              Torque Digital
-            </a>
-          </p>
+        <div className="pt-8" style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }}>
+          {/* Desktop: copyright a la izquierda, crédito al medio, tagline a la derecha */}
+          <div className="hidden sm:grid sm:grid-cols-3 sm:items-center gap-3 pb-8">
+            <p className="text-left whitespace-nowrap" style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.8rem" }}>
+              © 2025 Quiroga Automóviles. Todos los derechos reservados.
+            </p>
+            <p className="text-center whitespace-nowrap" style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.8rem" }}>
+              Sitio web creado por{" "}
+              <a href="https://www.instagram.com/torquedigitaluy/" target="_blank" rel="noopener noreferrer"
+                className="hover:text-[#0936B3] transition-colors" style={{ fontWeight: 600, color: "#6b7280" }}>
+                Torque Digital
+              </a>
+            </p>
+            <p className="text-right whitespace-nowrap" style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.8rem" }}>
+              Uruguay · Ventas · Permutas · Financiación
+            </p>
+          </div>
+
+          {/* Mobile: 3 líneas, espaciado uniforme, alineadas a la izquierda */}
+          <div className="flex sm:hidden flex-col items-start gap-3 pb-16 text-left">
+            <p style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.8rem" }}>
+              Uruguay · Ventas · Permutas · Financiación
+            </p>
+            <p style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.85rem" }}>
+              Sitio web creado por{" "}
+              <a href="https://www.instagram.com/torquedigitaluy/" target="_blank" rel="noopener noreferrer"
+                className="hover:text-[#0936B3] transition-colors" style={{ fontWeight: 600, color: "#6b7280" }}>
+                Torque Digital
+              </a>
+            </p>
+            <p style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.8rem" }}>
+              © 2025 Quiroga Automóviles. Todos los derechos reservados.
+            </p>
+          </div>
         </div>
       </div>
     </footer>

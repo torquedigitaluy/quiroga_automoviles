@@ -6,6 +6,7 @@ export interface CarDetail {
   name: string;
   year: number;
   price: string;
+  moneda?: string;
   km: string;
   fuel: string;
   transmission: string;
@@ -15,6 +16,11 @@ export interface CarDetail {
   features: string[];
   description?: string;
   whatsappText: string;
+}
+
+function formatKm(km: string) {
+  if (!km) return km;
+  return /km/i.test(km) ? km : `${km} km`;
 }
 
 interface MediaItem { type: "image" | "video"; src: string; }
@@ -72,9 +78,9 @@ export function CarDetailModal({ car, onClose }: Props) {
           <X size={18} />
         </button>
 
-        <div className="flex flex-col md:flex-row flex-1 min-h-0 overflow-hidden">
+        <div className="flex flex-col md:flex-row flex-1 min-h-0 overflow-y-auto md:overflow-hidden">
           {/* Gallery — white background */}
-          <div className="md:w-[62%] flex-shrink-0 flex flex-col bg-white overflow-hidden">
+          <div className="md:w-[62%] flex-shrink-0 flex flex-col bg-white">
             <div className="relative flex-1 flex items-center justify-center overflow-hidden bg-gray-50" style={{ minHeight: "340px" }}>
               {active.type === "image"
                 ? <img key={activeIdx} src={active.src} alt={`${car.name} ${activeIdx + 1}`}
@@ -116,7 +122,7 @@ export function CarDetailModal({ car, onClose }: Props) {
           </div>
 
           {/* Info panel */}
-          <div className="flex-1 p-6 flex flex-col gap-4 overflow-y-auto">
+          <div className="flex-1 p-6 flex flex-col gap-4 md:overflow-y-auto">
             <div>
               {car.badge && (
                 <span className="inline-block px-3 py-0.5 rounded-full text-xs mb-2"
@@ -134,20 +140,32 @@ export function CarDetailModal({ car, onClose }: Props) {
               {/* Price below name — black bold */}
               {car.price && (
                 <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "1.6rem", color: "#0d0d14", marginTop: "4px", lineHeight: 1 }}>
-                  {car.price}
+                  {car.moneda ? `${car.moneda} ${car.price}` : car.price}
                 </p>
               )}
             </div>
 
             {/* Specs */}
             <div className="flex flex-wrap gap-2">
-              {[car.fuel, car.transmission, car.km].filter(Boolean).map((spec, i) => (
+              {[car.fuel, car.transmission, formatKm(car.km)].filter(Boolean).map((spec, i) => (
                 <span key={i} className="px-3 py-1 rounded-full text-xs"
                   style={{ backgroundColor: "#eef0f8", color: "#0d0d14", fontFamily: "'Poppins', sans-serif", fontWeight: 500 }}>
                   {spec}
                 </span>
               ))}
             </div>
+
+            {/* Description */}
+            {car.description && (
+              <div>
+                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.72rem", letterSpacing: "0.15em", color: "#9ca3af", marginBottom: "6px" }}>
+                  DESCRIPCIÓN
+                </p>
+                <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.85rem", color: "#374151", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
+                  {car.description}
+                </p>
+              </div>
+            )}
 
             {/* Features */}
             <div>
@@ -179,9 +197,9 @@ export function CarDetailModal({ car, onClose }: Props) {
               <a href={`https://wa.me/598099802299?text=${waText}`} target="_blank" rel="noopener noreferrer"
                 className="flex items-center justify-between px-4 py-3 rounded-xl hover:brightness-95 transition-all"
                 style={{ backgroundColor: "#f0f9f4", border: "1px solid rgba(37,211,102,0.25)" }}>
-                <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.88rem", color: "#374151" }}>Zona América</span>
+                <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.88rem", color: "#374151" }}>Zonamerica</span>
                 <span className="flex items-center gap-1.5" style={{ color: "#25D366" }}>
-                  <WAIcon /><span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.88rem" }}>099802299</span>
+                  <WAIcon />
                 </span>
               </a>
               <a href={`https://wa.me/598091644585?text=${waText}`} target="_blank" rel="noopener noreferrer"
@@ -189,14 +207,14 @@ export function CarDetailModal({ car, onClose }: Props) {
                 style={{ backgroundColor: "#f0f9f4", border: "1px solid rgba(37,211,102,0.25)" }}>
                 <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.88rem", color: "#374151" }}>San Luis</span>
                 <span className="flex items-center gap-1.5" style={{ color: "#25D366" }}>
-                  <WAIcon /><span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.88rem" }}>091644585</span>
+                  <WAIcon />
                 </span>
               </a>
               <div className="grid grid-cols-2 gap-2">
                 <a href="https://waze.com/ul?q=Quiroga+Autom%C3%B3viles+Zonamerica&navigate=yes" target="_blank" rel="noopener noreferrer"
                   className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border hover:bg-gray-50 transition-colors"
                   style={{ borderColor: "rgba(0,0,0,0.1)", fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.72rem", color: "#374151" }}>
-                  <WazeIcon /> Waze Zona América
+                  <WazeIcon /> Waze Zonamerica
                 </a>
                 <a href="https://waze.com/ul?q=Quiroga+Automoviles+San+Luis&navigate=yes" target="_blank" rel="noopener noreferrer"
                   className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border hover:bg-gray-50 transition-colors"

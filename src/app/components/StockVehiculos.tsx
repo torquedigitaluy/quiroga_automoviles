@@ -8,9 +8,9 @@ import type { CarDetail } from "./CarDetailModal";
 function toCarDetail(v: Vehicle): CarDetail {
   return {
     id: typeof v.id === "string" ? parseInt(v.id) || 0 : v.id,
-    name: v.name, year: v.year, price: v.price, km: v.km,
+    name: v.name, year: v.year, price: v.price, moneda: v.moneda, km: v.km,
     fuel: v.fuel, transmission: v.transmission, badge: v.badge,
-    images: v.images, videos: v.videos, features: v.features, whatsappText: v.whatsappText,
+    images: v.images, videos: v.videos, features: v.features, description: v.description, whatsappText: v.whatsappText,
   };
 }
 
@@ -24,6 +24,7 @@ export function StockVehiculos() {
   const [selectedCar, setSelectedCar] = useState<CarDetail | null>(null);
 
   const filtered = vehicles.filter((v) => {
+    if (!v.featured) return false;
     if (filterType === "electrico") return v.fuel === "Eléctrico";
     if (filterType !== "todos" && v.type !== filterType) return false;
     if (v.priceNum > 0 && v.priceNum > maxPrice) return false;

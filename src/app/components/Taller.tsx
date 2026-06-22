@@ -30,7 +30,7 @@ export function Taller() {
       <div className="max-w-3xl mx-auto px-6">
         <div className="mb-10 text-center">
           <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 900, fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "#0d0d14", lineHeight: 0.95, letterSpacing: "-0.01em" }}>
-            Servicio Automotriz
+            SERVICIO AUTOMOTRIZ
           </h2>
           <p className="mt-4 max-w-lg mx-auto" style={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontSize: "0.92rem", lineHeight: 1.7 }}>
             Contamos con taller especializado en servicio automotriz y mecánica ligera.
@@ -60,10 +60,10 @@ export function Taller() {
             </div>
 
             <button type="submit"
-              className="flex items-center justify-center gap-2 py-3.5 rounded-xl mt-2 transition-all hover:brightness-110 hover:scale-[1.01]"
-              style={{ backgroundColor: "#25D366", color: "#fff", fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "1rem" }}>
+              className="flex items-center justify-center text-center gap-2 py-3.5 px-4 rounded-xl mt-2 transition-all hover:brightness-110 hover:scale-[1.01]"
+              style={{ backgroundColor: "#25D366", color: "#fff", fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "1rem", flexWrap: "wrap" }}>
               <MessageCircle size={18} />
-              AGENDAR POR WHATSAPP — TALLER
+              <span>AGENDAR</span>
             </button>
           </form>
         </div>

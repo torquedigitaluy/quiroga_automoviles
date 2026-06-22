@@ -109,7 +109,7 @@ export function Sucursales() {
               className="flex items-center gap-2 px-6 py-3 rounded-full transition-all hover:scale-105 hover:brightness-110"
               style={{ backgroundColor: "#25D366", color: "#fff", fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.9rem" }}>
               <MessageCircle size={16} />
-              Zona América
+              Zonamerica
             </a>
             <a href={WA_SAN_LUIS} target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 px-6 py-3 rounded-full transition-all hover:scale-105 hover:brightness-110"

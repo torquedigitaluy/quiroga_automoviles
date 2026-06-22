@@ -23,7 +23,7 @@ export function Seguros() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="mb-12 text-center">
           <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 900, fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "#0d0d14", lineHeight: 0.95, letterSpacing: "-0.01em" }}>
-            Cotizá tu Seguro
+            COTIZÁ TU SEGURO
           </h2>
         </div>
 
@@ -46,10 +46,10 @@ export function Seguros() {
         {/* WA button centered below logos */}
         <div className="flex justify-center">
           <a href={WA_SEGUROS} target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 px-7 py-3.5 rounded-full transition-all hover:brightness-110"
-            style={{ backgroundColor: "#25D366", color: "#fff", fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.04em" }}>
+            className="flex items-center justify-center gap-2 px-7 py-3.5 rounded-full transition-all hover:brightness-110 text-center"
+            style={{ backgroundColor: "#25D366", color: "#fff", fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.04em", flexWrap: "wrap" }}>
             <MessageCircle size={18} />
-            COTIZÁ TU SEGURO POR WHATSAPP
+            <span>COTIZÁ TU SEGURO</span>
           </a>
         </div>
       </div>
