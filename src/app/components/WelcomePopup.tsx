@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import cartelImg from "../../imports/ChatGPT_Image_19_jun_2026__10_25_13.png";
+import cartelImg from "../../imports/ChatGPT_Image_22_jun_2026__13_03_05.png";
 
 export function WelcomePopup() {
   const [visible, setVisible] = useState(false);
