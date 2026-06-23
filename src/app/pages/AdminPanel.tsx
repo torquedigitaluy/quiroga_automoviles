@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { Plus, Trash2, LogOut, Car, Upload, X, ImageIcon, Video, Eye, EyeOff, Star, Edit3, Check } from "lucide-react";
 import { useVehicles, type CreateVehicleData } from "../contexts/VehiclesContext";
 import { SiteContentManager } from "./SiteContentManager";
+import { transcodeToH264 } from "../../lib/videoTranscode";
 import logoImg from "../../imports/LOGO_QUIROGA_AUTOMOVILES.png";
 
 const ADMIN_USER = "quiroga";
@@ -84,6 +85,8 @@ export function AdminPanel() {
   const [msg, setMsg] = useState("");
   const [tcDraft, setTcDraft] = useState<number>(tipoCambio);
   const [tcSaving, setTcSaving] = useState(false);
+  const [convertingVideo, setConvertingVideo] = useState(false);
+  const [convertPct, setConvertPct] = useState<number | null>(null);
   const imgRef = useRef<HTMLInputElement>(null);
   const vidRef = useRef<HTMLInputElement>(null);
   const dragIndexRef = useRef<number | null>(null);
@@ -116,9 +119,20 @@ export function AdminPanel() {
     setImages((p) => [...p, ...items]);
   };
 
-  const handleVideoFiles = (files: FileList | null) => {
+  const handleVideoFiles = async (files: FileList | null) => {
     if (!files) return;
-    setUploadedVideos((p) => [...p, ...Array.from(files).filter((f) => f.type.startsWith("video/"))]);
+    const arr = Array.from(files).filter((f) => f.type.startsWith("video/"));
+    if (arr.length === 0) return;
+    setConvertingVideo(true);
+    try {
+      for (const f of arr) {
+        const optimized = await transcodeToH264(f, setConvertPct);
+        setUploadedVideos((p) => [...p, optimized]);
+      }
+    } finally {
+      setConvertPct(null);
+      setConvertingVideo(false);
+    }
   };
 
   const removeImg = (id: string) => {
@@ -334,6 +348,11 @@ export function AdminPanel() {
           <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.7rem", color: "#9ca3af" }}>MP4, MOV — máx 50 MB</p>
         </div>
         <input ref={vidRef} type="file" accept="video/*" className="hidden" onChange={(e) => handleVideoFiles(e.target.files)} />
+        {convertingVideo && (
+          <div className="mt-3 p-2.5 rounded-lg text-center" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#b45309", fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.78rem" }}>
+            Optimizando video para que se vea bien en todos los celulares… {convertPct ?? 0}%
+          </div>
+        )}
         {uploadedVideos.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
             {uploadedVideos.map((f, i) => (

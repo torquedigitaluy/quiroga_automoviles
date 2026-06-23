@@ -176,7 +176,9 @@ export function VehiclesProvider({ children }: { children: ReactNode }) {
 
   const uploadMedia = async (file: File, vehicleId: string): Promise<string> => {
     const ext = file.name.split(".").pop();
-    const path = `${vehicleId}/${Date.now()}.${ext}`;
+    // crypto.randomUUID() avoids path collisions when several files are
+    // uploaded in the same Promise.all batch and land on the same millisecond.
+    const path = `${vehicleId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
     const { error: err } = await supabase.storage.from("vehicle-media").upload(path, file, { upsert: true });
     if (err) throw err;
     const { data } = supabase.storage.from("vehicle-media").getPublicUrl(path);

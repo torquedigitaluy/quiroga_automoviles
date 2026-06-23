@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Plus, Trash2, Upload, ArrowUp, ArrowDown, ImageIcon, Video } from "lucide-react";
 import { useVehicles } from "../contexts/VehiclesContext";
 import { useSiteContent, type HeroImage, type NovedadVideo } from "../contexts/SiteContentContext";
+import { transcodeToH264 } from "../../lib/videoTranscode";
 
 const lbl: React.CSSProperties = {
   fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.7rem",
@@ -25,6 +26,7 @@ export function SiteContentManager() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const [open, setOpen] = useState(false);
+  const [convertPct, setConvertPct] = useState<number | null>(null);
 
   useEffect(() => setHeroDraft(hero), [hero]);
   useEffect(() => setNovDraft(novedades), [novedades]);
@@ -73,9 +75,11 @@ export function SiteContentManager() {
     if (!file || novDraft.length >= 3) return;
     setBusy(true);
     try {
-      const url = await uploadMedia(file, "site-novedades");
+      const optimized = await transcodeToH264(file, setConvertPct);
+      const url = await uploadMedia(optimized, "site-novedades");
       await persistNov([...novDraft, { url }]);
     } catch { notify("Error al subir el video."); }
+    setConvertPct(null);
     setBusy(false);
   };
   const replaceVideo = async (i: number, file?: File | null) => {
@@ -83,10 +87,12 @@ export function SiteContentManager() {
     setBusy(true);
     try {
       const old = novDraft[i]?.url;
-      const url = await uploadMedia(file, "site-novedades");
+      const optimized = await transcodeToH264(file, setConvertPct);
+      const url = await uploadMedia(optimized, "site-novedades");
       if (old) { try { await deleteMedia(old); } catch { /* ignore */ } }
       await persistNov(novDraft.map((v, j) => (j === i ? { url } : v)));
     } catch { notify("Error al subir el video."); }
+    setConvertPct(null);
     setBusy(false);
   };
   const removeVideo = async (i: number) => {
@@ -108,6 +114,11 @@ export function SiteContentManager() {
 
       {open && (
         <div className="px-5 pb-6">
+          {convertPct !== null && (
+            <div className="mb-4 p-2.5 rounded-lg text-center" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#b45309", fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.8rem" }}>
+              Optimizando video para que se vea bien en todos los celulares… {convertPct}%
+            </div>
+          )}
           {msg && (
             <div className="mb-4 p-2.5 rounded-lg text-center" style={{ backgroundColor: "rgba(9,54,179,0.08)", color: "#0936B3", fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.8rem" }}>
               {msg}{busy ? " …" : ""}
