@@ -25,7 +25,8 @@ export interface FinanciacionPdfRow {
 }
 
 export interface FinanciacionPdfData {
-  montoBase: number;
+  /** Amount the user typed in the calculator — never the títulos-adjusted internal base. */
+  montoMostrado: number;
   incluyeTitulos: boolean;
   filasUSD: FinanciacionPdfRow[];
   filasUYU: FinanciacionPdfRow[];
@@ -94,11 +95,28 @@ export async function buildFinanciacionPdf(data: FinanciacionPdfData): Promise<B
   doc.text("Simulación de Financiación Propia", pageWidth / 2, y, { align: "center" });
   y += 22;
 
-  doc.setFont("helvetica", "normal");
   doc.setFontSize(11);
-  doc.setTextColor(107, 114, 128);
-  const montoLabel = `Monto a financiar: USD ${fmt(data.montoBase)}${data.incluyeTitulos ? " (incluye costo de títulos)" : ""}`;
-  doc.text(montoLabel, pageWidth / 2, y, { align: "center" });
+  const montoLabel = `Monto a financiar: USD ${fmt(data.montoMostrado)}`;
+  if (data.incluyeTitulos) {
+    const suffix = " (incluye títulos)";
+    doc.setFont("helvetica", "normal");
+    const baseWidth = doc.getTextWidth(montoLabel);
+    doc.setFont("helvetica", "bold");
+    const suffixWidth = doc.getTextWidth(suffix);
+    const startX = pageWidth / 2 - (baseWidth + suffixWidth) / 2;
+
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(107, 114, 128);
+    doc.text(montoLabel, startX, y);
+
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(13, 13, 20);
+    doc.text(suffix, startX + baseWidth, y);
+  } else {
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(107, 114, 128);
+    doc.text(montoLabel, pageWidth / 2, y, { align: "center" });
+  }
   y += 36;
 
   const colWidth = (pageWidth - 80) / 2 - 16;

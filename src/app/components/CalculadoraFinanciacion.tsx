@@ -35,16 +35,19 @@ export function CalculadoraFinanciacion() {
     setSharing(true);
     try {
       const blob = await buildFinanciacionPdf({
-        montoBase: base,
+        // Show the amount the user typed, not the internal base used for the
+        // cuota math — the títulos surcharge is baked into the cuotas only,
+        // same as on the page itself, never shown as a separate amount.
+        montoMostrado: montoNum,
         incluyeTitulos,
         filasUSD: USD_PLAZOS.map(({ cuotas, mult }) => ({ cuotas, cuota: calcUSD(base, mult, cuotas) })),
         filasUYU: UYU_PLAZOS.map((plazo) => ({ cuotas: plazo, cuota: calcUYU(montoUYU, plazo) })),
       });
-      const file = new File([blob], `Financiacion-Quiroga-USD-${Math.round(base)}.pdf`, { type: "application/pdf" });
+      const file = new File([blob], `Financiacion-Quiroga-USD-${Math.round(montoNum)}.pdf`, { type: "application/pdf" });
       const shareData = {
         files: [file],
         title: "Financiación Quiroga Automóviles",
-        text: `Simulación de financiación propia — Quiroga Automóviles\nMonto a financiar: USD ${fmt(base)}`,
+        text: `Simulación de financiación propia — Quiroga Automóviles\nMonto a financiar: USD ${fmt(montoNum)}`,
       };
       if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
         await navigator.share(shareData);
