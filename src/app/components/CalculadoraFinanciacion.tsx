@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { MessageCircle } from "lucide-react";
 import { useVehicles } from "../contexts/VehiclesContext";
+import { buildFinanciacionPdf } from "../../lib/financingPdf";
 
 const USD_PLAZOS = [
   { cuotas: 12, mult: 1.24 },
@@ -22,11 +24,46 @@ export function CalculadoraFinanciacion() {
   const { tipoCambio } = useVehicles();
   const [monto, setMonto] = useState("");
   const [incluyeTitulos, setIncluyeTitulos] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
   const montoNum = parseFloat(monto) || 0;
   const base = montoNum + (incluyeTitulos ? TITULO_USD : 0);
   const montoUYU = base * tipoCambio;
   const fmt = (n: number) => n.toLocaleString("es-UY");
+
+  const handleShare = async () => {
+    setSharing(true);
+    try {
+      const blob = await buildFinanciacionPdf({
+        montoBase: base,
+        incluyeTitulos,
+        filasUSD: USD_PLAZOS.map(({ cuotas, mult }) => ({ cuotas, cuota: calcUSD(base, mult, cuotas) })),
+        filasUYU: UYU_PLAZOS.map((plazo) => ({ cuotas: plazo, cuota: calcUYU(montoUYU, plazo) })),
+      });
+      const file = new File([blob], `Financiacion-Quiroga-USD-${Math.round(base)}.pdf`, { type: "application/pdf" });
+      const shareData = {
+        files: [file],
+        title: "Financiación Quiroga Automóviles",
+        text: `Simulación de financiación propia — Quiroga Automóviles\nMonto a financiar: USD ${fmt(base)}`,
+      };
+      if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+        await navigator.share(shareData);
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = file.name;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name !== "AbortError") {
+        alert("No se pudo generar el PDF. Intentá nuevamente.");
+      }
+    } finally {
+      setSharing(false);
+    }
+  };
 
   const th: React.CSSProperties = {
     fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.7rem",
@@ -77,59 +114,74 @@ export function CalculadoraFinanciacion() {
 
           {/* Results */}
           {montoNum > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100">
-              {/* USD */}
-              <div className="p-5">
-                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "0.82rem", color: "#0936B3", marginBottom: "10px" }}>
-                  FINANCIACIÓN EN DÓLARES
-                </p>
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr>
-                      <th style={th}>CUOTAS</th>
-                      <th style={{ ...th, textAlign: "right" as const }}>CUOTA/MES</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {USD_PLAZOS.map(({ cuotas, mult }) => {
-                      const cuota = calcUSD(base, mult, cuotas);
-                      return (
-                        <tr key={cuotas} className="hover:bg-blue-50/30 transition-colors">
-                          <td style={td}>{cuotas}x</td>
-                          <td style={{ ...tdBold, textAlign: "right" as const }}>USD {fmt(cuota)}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+                {/* USD */}
+                <div className="p-5">
+                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "0.82rem", color: "#0936B3", marginBottom: "10px" }}>
+                    FINANCIACIÓN EN DÓLARES
+                  </p>
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr>
+                        <th style={th}>CUOTAS</th>
+                        <th style={{ ...th, textAlign: "right" as const }}>CUOTA/MES</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {USD_PLAZOS.map(({ cuotas, mult }) => {
+                        const cuota = calcUSD(base, mult, cuotas);
+                        return (
+                          <tr key={cuotas} className="hover:bg-blue-50/30 transition-colors">
+                            <td style={td}>{cuotas}x</td>
+                            <td style={{ ...tdBold, textAlign: "right" as const }}>USD {fmt(cuota)}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* UYU */}
+                <div className="p-5">
+                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "0.82rem", color: "#0936B3", marginBottom: "8px" }}>
+                    FINANCIACIÓN EN PESOS
+                  </p>
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr>
+                        <th style={th}>CUOTAS</th>
+                        <th style={{ ...th, textAlign: "right" as const }}>CUOTA/MES</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {UYU_PLAZOS.map((plazo) => {
+                        const cuota = calcUYU(montoUYU, plazo);
+                        return (
+                          <tr key={plazo} className="hover:bg-blue-50/30 transition-colors">
+                            <td style={td}>{plazo}x</td>
+                            <td style={{ ...tdBold, textAlign: "right" as const }}>$ {fmt(cuota)}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
-              {/* UYU */}
-              <div className="p-5">
-                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "0.82rem", color: "#0936B3", marginBottom: "8px" }}>
-                  FINANCIACIÓN EN PESOS
+              {/* Disclaimer + share */}
+              <div className="p-5 border-t" style={{ borderColor: "rgba(0,0,0,0.07)" }}>
+                <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.74rem", color: "#9ca3af", textAlign: "center", marginBottom: "14px" }}>
+                  *Valor aproximado de la cuota. Los montos finales pueden variar y están sujetos a confirmación al momento de la firma.
                 </p>
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr>
-                      <th style={th}>CUOTAS</th>
-                      <th style={{ ...th, textAlign: "right" as const }}>CUOTA/MES</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {UYU_PLAZOS.map((plazo) => {
-                      const cuota = calcUYU(montoUYU, plazo);
-                      return (
-                        <tr key={plazo} className="hover:bg-blue-50/30 transition-colors">
-                          <td style={td}>{plazo}x</td>
-                          <td style={{ ...tdBold, textAlign: "right" as const }}>$ {fmt(cuota)}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                <button type="button" onClick={handleShare} disabled={sharing}
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl transition-all hover:brightness-110 disabled:opacity-60"
+                  style={{ backgroundColor: "#25D366", color: "#fff", fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.9rem" }}>
+                  <MessageCircle size={17} />
+                  {sharing ? "GENERANDO PDF..." : "COMPARTIR SIMULACIÓN (PDF)"}
+                </button>
               </div>
-            </div>
+            </>
           ) : (
             <div className="p-10 text-center" style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.9rem" }}>
               Ingresá un monto para ver las cuotas
