@@ -24,7 +24,7 @@ export function Footer() {
     { label: "Inicio", href: "#inicio" },
     { label: "Financiación", href: "#financiacion" },
     { label: "Vehículos", to: "/autos" },
-    { label: "Accesorios", href: "#accesorios" },
+    { label: "Accesorios", to: "/accesorios" },
     { label: "Seguros", href: "#seguros" },
     { label: "Taller", href: "#taller" },
     { label: "Localidades", href: "#sucursales" },

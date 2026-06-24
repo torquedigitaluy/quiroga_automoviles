@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { Plus, Trash2, LogOut, Car, Upload, X, ImageIcon, Video, Eye, EyeOff, Star, Edit3, Check } from "lucide-react";
 import { useVehicles, type CreateVehicleData } from "../contexts/VehiclesContext";
 import { SiteContentManager } from "./SiteContentManager";
+import { AccessoriesManager } from "./AccessoriesManager";
 import { transcodeToH264 } from "../../lib/videoTranscode";
 import logoImg from "../../imports/LOGO_QUIROGA_AUTOMOVILES.png";
 
@@ -441,6 +442,9 @@ export function AdminPanel() {
 
         {/* Site content (hero + novedades) */}
         <SiteContentManager />
+
+        {/* Accesorios */}
+        <AccessoriesManager />
 
         <div className="flex justify-between items-center mb-6">
           <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "1.5rem", color: "#0d0d14" }}>

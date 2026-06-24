@@ -5,7 +5,6 @@ import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { Services } from "./components/Services";
 import { StockVehiculos } from "./components/StockVehiculos";
-import { Accesorios } from "./components/Accesorios";
 import { CotizadorVehiculo } from "./components/CotizadorVehiculo";
 import { Financiacion } from "./components/Financiacion";
 import { CalculadoraFinanciacion } from "./components/CalculadoraFinanciacion";
@@ -16,7 +15,9 @@ import { Footer } from "./components/Footer";
 import { WelcomePopup } from "./components/WelcomePopup";
 import { VehiclesProvider } from "./contexts/VehiclesContext";
 import { SiteContentProvider } from "./contexts/SiteContentContext";
+import { AccessoriesProvider } from "./contexts/AccessoriesContext";
 import { VehiculosPage } from "./pages/VehiculosPage";
+import { AccesoriosPage } from "./pages/AccesoriosPage";
 import { AdminLogin, AdminPanel } from "./pages/AdminPanel";
 
 /* MARKER-MAKE-KIT-INVOKED */
@@ -52,7 +53,6 @@ function LandingPage() {
       <Hero />
       <Services />
       <StockVehiculos />
-      <Accesorios />
       <CalculadoraFinanciacion />
       <Financiacion />
       <Seguros />
@@ -70,13 +70,16 @@ export default function App() {
     <BrowserRouter>
       <VehiclesProvider>
         <SiteContentProvider>
+        <AccessoriesProvider>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/autos" element={<VehiculosPage />} />
           <Route path="/autos/:slug" element={<VehiculosPage />} />
+          <Route path="/accesorios" element={<AccesoriosPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminPanel />} />
         </Routes>
+        </AccessoriesProvider>
         </SiteContentProvider>
       </VehiclesProvider>
     </BrowserRouter>

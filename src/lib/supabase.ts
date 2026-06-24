@@ -28,3 +28,15 @@ export type VehicleRow = {
   video_urls: string[];
   created_at: string;
 };
+
+export type AccessoryRow = {
+  id: string;
+  name: string;
+  description: string | null;
+  price_num: number;
+  cover_image_url: string | null;
+  gallery_urls: string[];
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+};
