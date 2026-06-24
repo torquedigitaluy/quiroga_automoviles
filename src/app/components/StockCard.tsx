@@ -1,5 +1,6 @@
 import { Share2 } from "lucide-react";
 import type { Vehicle } from "../contexts/VehiclesContext";
+import { vehicleSlug } from "../../lib/slug";
 
 interface Props {
   vehicle: Vehicle;
@@ -19,7 +20,7 @@ export function StockCard({ vehicle, onOpen }: Props) {
 
   const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const url = `${window.location.origin}/autos/${vehicle.id}`;
+    const url = `${window.location.origin}/autos/${vehicleSlug(vehicle)}`;
     if (navigator.share) navigator.share({ title: vehicle.name, url });
     else { navigator.clipboard.writeText(url); alert("Enlace copiado"); }
   };

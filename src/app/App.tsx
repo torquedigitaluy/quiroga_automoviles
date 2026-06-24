@@ -71,7 +71,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/autos" element={<VehiculosPage />} />
-          <Route path="/autos/:id" element={<VehiculosPage />} />
+          <Route path="/autos/:slug" element={<VehiculosPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminPanel />} />
         </Routes>

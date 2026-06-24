@@ -6,6 +6,7 @@ import { StockCard } from "../components/StockCard";
 import { CarDetailModal } from "../components/CarDetailModal";
 import type { Vehicle } from "../contexts/VehiclesContext";
 import type { CarDetail } from "../components/CarDetailModal";
+import { shortIdFromSlug } from "../../lib/slug";
 import logoImg from "../../imports/LOGO_QUIROGA_AUTOMOVILES.png";
 
 function toCarDetail(v: Vehicle): CarDetail {
@@ -21,20 +22,23 @@ const MAX_PRICE = 80000;
 
 export function VehiculosPage() {
   const navigate = useNavigate();
-  const { id: sharedId } = useParams<{ id?: string }>();
+  const { slug } = useParams<{ slug?: string }>();
   const { vehicles, loading } = useVehicles();
   const [filterType, setFilterType] = useState<"todos" | "nuevo" | "usado" | "electrico">("todos");
   const [maxPrice, setMaxPrice] = useState(MAX_PRICE);
   const [selectedCar, setSelectedCar] = useState<CarDetail | null>(null);
 
-  // Deep link from the "Compartir" button (/autos/:id) — open that vehicle's
-  // modal as soon as the vehicle list loads, then drop the id from the URL.
+  // Deep link from the "Compartir" button (/autos/:slug, e.g.
+  // peugeot-208-active-2015-d7e1c84f) — the trailing segment is the
+  // vehicle's short id, used to find it once the list loads, then the
+  // slug is dropped from the URL.
   useEffect(() => {
-    if (!sharedId || loading) return;
-    const match = vehicles.find((v) => v.id === sharedId);
+    if (!slug || loading) return;
+    const shortId = shortIdFromSlug(slug);
+    const match = vehicles.find((v) => v.id.startsWith(shortId));
     if (match) setSelectedCar(toCarDetail(match));
     navigate("/autos", { replace: true });
-  }, [sharedId, loading, vehicles, navigate]);
+  }, [slug, loading, vehicles, navigate]);
 
   const filtered = vehicles.filter((v) => {
     if (filterType === "electrico") return v.fuel === "Eléctrico";
