@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import { MapPin, Phone } from "lucide-react";
 import logoImg from "../../imports/LOGO_QUIROGA_AUTOMOVILES.png";
 
@@ -12,6 +13,7 @@ function TTIcon() {
 }
 
 export function Footer() {
+  const navigate = useNavigate();
   const scrollTo = (href: string) => {
     const el = document.querySelector(href);
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -21,12 +23,18 @@ export function Footer() {
   const navLinks = [
     { label: "Inicio", href: "#inicio" },
     { label: "Financiación", href: "#financiacion" },
-    { label: "Vehículos", href: "#stock" },
+    { label: "Vehículos", to: "/autos" },
+    { label: "Accesorios", href: "#accesorios" },
     { label: "Seguros", href: "#seguros" },
     { label: "Taller", href: "#taller" },
     { label: "Localidades", href: "#sucursales" },
     { label: "Contacto", href: "#cotizador" },
   ];
+
+  const handleNavClick = (link: { href?: string; to?: string }) => {
+    if (link.to) navigate(link.to);
+    else if (link.href) scrollTo(link.href);
+  };
 
   return (
     <footer style={{ backgroundColor: "#f4f6fb", borderTop: "1px solid rgba(0,0,0,0.07)" }}>
@@ -43,17 +51,17 @@ export function Footer() {
             {/* Social icons — B&W */}
             <div className="flex gap-3 mt-6">
               <a href="https://www.instagram.com/quirogautomoviles/" target="_blank" rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg flex items-center justify-center border transition-colors hover:bg-gray-900 hover:text-white hover:border-gray-900"
+                className="w-9 h-9 rounded-lg flex items-center justify-center border transition-colors hover:bg-[#0936B3] hover:text-white hover:border-[#0936B3]"
                 style={{ borderColor: "rgba(0,0,0,0.14)", color: "#374151" }} aria-label="Instagram">
                 <IGIcon />
               </a>
               <a href="https://www.facebook.com/profile.php?id=61588070671164" target="_blank" rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg flex items-center justify-center border transition-colors hover:bg-gray-900 hover:text-white hover:border-gray-900"
+                className="w-9 h-9 rounded-lg flex items-center justify-center border transition-colors hover:bg-[#0936B3] hover:text-white hover:border-[#0936B3]"
                 style={{ borderColor: "rgba(0,0,0,0.14)", color: "#374151" }} aria-label="Facebook">
                 <FBIcon />
               </a>
               <a href="https://www.tiktok.com/@quiroga.automovil" target="_blank" rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg flex items-center justify-center border transition-colors hover:bg-gray-900 hover:text-white hover:border-gray-900"
+                className="w-9 h-9 rounded-lg flex items-center justify-center border transition-colors hover:bg-[#0936B3] hover:text-white hover:border-[#0936B3]"
                 style={{ borderColor: "rgba(0,0,0,0.14)", color: "#374151" }} aria-label="TikTok">
                 <TTIcon />
               </a>
@@ -66,12 +74,12 @@ export function Footer() {
               NAVEGACIÓN
             </h4>
             <ul className="flex flex-col gap-2.5">
-              {navLinks.map(({ href, label }) => (
-                <li key={href}>
-                  <button onClick={() => scrollTo(href)}
+              {navLinks.map((link) => (
+                <li key={link.label}>
+                  <button onClick={() => handleNavClick(link)}
                     style={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontSize: "0.88rem" }}
                     className="hover:text-[#0936B3] transition-colors">
-                    {label}
+                    {link.label}
                   </button>
                 </li>
               ))}

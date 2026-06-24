@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import { Menu, X, Phone } from "lucide-react";
 import logoImg from "../../imports/LOGO_QUIROGA_AUTOMOVILES.png";
 
 const WHATSAPP_URL = "https://wa.me/598092852725?text=Hola%2C%20me%20interesa%20consultar%20sobre%20un%20auto";
 
 export function Navbar() {
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -17,7 +19,8 @@ export function Navbar() {
   const navLinks = [
     { label: "Inicio", href: "#inicio" },
     { label: "Financiación", href: "#financiacion" },
-    { label: "Vehículos", href: "#stock" },
+    { label: "Vehículos", to: "/autos" },
+    { label: "Accesorios", href: "#accesorios" },
     { label: "Seguros", href: "#seguros" },
     { label: "Taller", href: "#taller" },
     { label: "Localidades", href: "#sucursales" },
@@ -28,6 +31,11 @@ export function Navbar() {
     setMenuOpen(false);
     const el = document.querySelector(href);
     if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleNavClick = (link: { href?: string; to?: string }) => {
+    if (link.to) { setMenuOpen(false); navigate(link.to); }
+    else if (link.href) scrollTo(link.href);
   };
 
   return (
@@ -49,8 +57,8 @@ export function Navbar() {
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((l) => (
             <button
-              key={l.href}
-              onClick={() => scrollTo(l.href)}
+              key={l.label}
+              onClick={() => handleNavClick(l)}
               style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, letterSpacing: "0.08em" }}
               className="text-gray-500 hover:text-[#1634D4] transition-colors uppercase text-sm tracking-widest"
             >
@@ -74,8 +82,8 @@ export function Navbar() {
         <div className="md:hidden bg-white border-t px-6 py-6 flex flex-col gap-5" style={{ borderColor: "rgba(0,0,0,0.08)" }}>
           {navLinks.map((l) => (
             <button
-              key={l.href}
-              onClick={() => scrollTo(l.href)}
+              key={l.label}
+              onClick={() => handleNavClick(l)}
               style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, letterSpacing: "0.12em" }}
               className="text-left text-gray-600 hover:text-[#1634D4] uppercase text-lg"
             >

@@ -71,7 +71,7 @@ export function VehiculosPage() {
 
       <div className="max-w-7xl mx-auto px-6 py-10">
         <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 900, fontSize: "clamp(1.8rem, 4vw, 2.5rem)", color: "#0d0d14", marginBottom: "24px" }}>
-          Stock completo — <span style={{ color: "#0936B3" }}>{filtered.length} vehículos</span>
+          Todos los vehículos — <span style={{ color: "#0936B3" }}>{filtered.length} vehículos</span>
         </h1>
 
         {/* Filters */}
