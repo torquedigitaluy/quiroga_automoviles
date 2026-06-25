@@ -70,7 +70,7 @@ export function CarDetailModal({ car, onClose }: Props) {
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4"
       style={{ backgroundColor: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="relative bg-white rounded-2xl overflow-hidden w-full max-w-5xl max-h-[94vh] flex flex-col shadow-2xl"
+      <div className="relative bg-white rounded-2xl overflow-hidden w-full max-w-5xl md:max-w-6xl lg:max-w-7xl max-h-[94vh] flex flex-col shadow-2xl"
         style={{ border: "1px solid rgba(0,0,0,0.08)" }}>
         <button onClick={onClose}
           className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full flex items-center justify-center bg-white/90 hover:bg-gray-100 transition-colors shadow"
@@ -80,13 +80,13 @@ export function CarDetailModal({ car, onClose }: Props) {
 
         <div className="flex flex-col md:flex-row flex-1 min-h-0 overflow-y-auto md:overflow-hidden">
           {/* Gallery — white background */}
-          <div className="md:w-[62%] flex-shrink-0 flex flex-col bg-white">
+          <div className="md:w-[65%] flex-shrink-0 flex flex-col bg-white">
             <div className="relative flex-1 flex items-center justify-center overflow-hidden bg-gray-50" style={{ minHeight: "340px" }}>
               {active.type === "image"
                 ? <img key={activeIdx} src={active.src} alt={`${car.name} ${activeIdx + 1}`}
-                    className="w-full h-full object-contain" style={{ maxHeight: "500px" }} />
+                    className="w-full h-full object-contain max-h-[500px] md:max-h-none" />
                 : <video key={activeIdx} src={active.src} controls playsInline
-                    className="w-full h-full object-contain" style={{ maxHeight: "500px" }} />
+                    className="w-full h-full object-contain max-h-[500px] md:max-h-none" />
               }
               {total > 1 && (
                 <>
