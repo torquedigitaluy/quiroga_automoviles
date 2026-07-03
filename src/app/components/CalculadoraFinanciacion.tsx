@@ -33,8 +33,11 @@ export function CalculadoraFinanciacion() {
 
   const handleShare = async () => {
     setSharing(true);
+
+    // Step 1: generate the PDF — isolated try/catch so sharing errors don't mask this
+    let blob: Blob;
     try {
-      const blob = await buildFinanciacionPdf({
+      blob = await buildFinanciacionPdf({
         // Show the amount the user typed, not the internal base used for the
         // cuota math — the títulos surcharge is baked into the cuotas only,
         // same as on the page itself, never shown as a separate amount.
@@ -43,25 +46,41 @@ export function CalculadoraFinanciacion() {
         filasUSD: USD_PLAZOS.map(({ cuotas, mult }) => ({ cuotas, cuota: calcUSD(base, mult, cuotas) })),
         filasUYU: UYU_PLAZOS.map((plazo) => ({ cuotas: plazo, cuota: calcUYU(montoUYU, plazo) })),
       });
-      const file = new File([blob], `Financiacion-Quiroga-USD-${Math.round(montoNum)}.pdf`, { type: "application/pdf" });
+    } catch {
+      alert("No se pudo generar el PDF. Intentá nuevamente.");
+      setSharing(false);
+      return;
+    }
+
+    const fileName = `Financiacion-Quiroga-USD-${Math.round(montoNum)}.pdf`;
+    const file = new File([blob], fileName, { type: "application/pdf" });
+
+    const download = () => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+    };
+
+    // Step 2: share or download — share errors fall back to download silently
+    try {
       const shareData = {
         files: [file],
         title: "Financiación Quiroga Automóviles",
         text: `Simulación de financiación propia — Quiroga Automóviles\nMonto a financiar: USD ${fmt(montoNum)}`,
       };
-      if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
         await navigator.share(shareData);
       } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = file.name;
-        a.click();
-        URL.revokeObjectURL(url);
+        download();
       }
     } catch (err) {
       if (err instanceof Error && err.name !== "AbortError") {
-        alert("No se pudo generar el PDF. Intentá nuevamente.");
+        download();
       }
     } finally {
       setSharing(false);
