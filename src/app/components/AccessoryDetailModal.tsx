@@ -67,7 +67,7 @@ export function AccessoryDetailModal({ accessory, onClose }: Props) {
                 {accessory.name}
               </h2>
               <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "1.5rem", color: "#0d0d14", marginTop: "6px" }}>
-                USD {accessory.priceNum.toLocaleString("es-UY")}
+                {accessory.priceNum > 0 ? `USD ${accessory.priceNum.toLocaleString("es-UY")}` : "—"}
               </p>
             </div>
 
