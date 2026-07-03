@@ -66,14 +66,15 @@ export function CalculadoraFinanciacion() {
       setTimeout(() => URL.revokeObjectURL(url), 100);
     };
 
-    // Step 2: share or download — share errors fall back to download silently
+    // Step 2: mobile → native share (WhatsApp, etc.); desktop → direct download
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     try {
       const shareData = {
         files: [file],
         title: "Financiación Quiroga Automóviles",
         text: `Simulación de financiación propia — Quiroga Automóviles\nMonto a financiar: USD ${fmt(montoNum)}`,
       };
-      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      if (isMobile && navigator.share && navigator.canShare && navigator.canShare(shareData)) {
         await navigator.share(shareData);
       } else {
         download();
