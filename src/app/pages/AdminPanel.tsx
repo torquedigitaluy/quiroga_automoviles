@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
-import { Plus, Trash2, LogOut, Car, Upload, X, ImageIcon, Video, Eye, EyeOff, Star, Edit3, Check, Users, KeyRound, Moon, Sun } from "lucide-react";
+import { Plus, Trash2, LogOut, Car, Upload, X, ImageIcon, Video, Eye, EyeOff, Star, Edit3, Check, Users, KeyRound } from "lucide-react";
 import { useVehicles, type CreateVehicleData } from "../contexts/VehiclesContext";
 import { SiteContentManager } from "./SiteContentManager";
 import { AccessoriesManager } from "./AccessoriesManager";
@@ -174,9 +174,6 @@ export function AdminPanel() {
   const [userMsg, setUserMsg] = useState("");
   const [changePwForm, setChangePwForm] = useState({ current: "", next: "", confirm: "" });
   const [pwMsg, setPwMsg] = useState("");
-  const [isDark, setIsDark] = useState(() => localStorage.getItem("quiroga_admin_dark") === "1");
-  const toggleDark = () => setIsDark((d) => { const n = !d; localStorage.setItem("quiroga_admin_dark", n ? "1" : "0"); return n; });
-
   useEffect(() => {
     if (!isSuperAdmin) return;
     setUsersLoading(true);
@@ -482,71 +479,17 @@ export function AdminPanel() {
   );
 
   return (
-    <div className={`min-h-screen${isDark ? " admin-dark" : ""}`} style={{ backgroundColor: isDark ? "#0f172a" : "#f4f6fb" }}>
-      {isDark && (
-        <style>{`
-          .admin-dark .bg-white { background-color: #1e293b !important; }
-          .admin-dark .bg-gray-50 { background-color: #162032 !important; }
-          .admin-dark .bg-gray-100 { background-color: #1e293b !important; }
-          .admin-dark [style*="background-color: #f4f6fb"] { background-color: #162032 !important; }
-          .admin-dark [style*="background-color: #f9fafb"] { background-color: #1a2332 !important; }
-          .admin-dark [style*="background-color: #fffbf0"] { background-color: #1c1a0d !important; }
-          .admin-dark [style*="background-color: #f0f4ff"] { background-color: #0d1a3e !important; }
-          .admin-dark [style*="background-color: #f0f9f4"] { background-color: #0a1f14 !important; }
-          .admin-dark [style*="background-color: #fef2f2"] { background-color: #1f0a0a !important; }
-          .admin-dark [style*="background-color: rgba(9,54,179,0.07)"] { background-color: rgba(9,54,179,0.25) !important; }
-          .admin-dark [style*="background-color: rgba(9,54,179,0.08)"] { background-color: rgba(9,54,179,0.25) !important; }
-          .admin-dark [style*="background-color: rgba(9,54,179,0.1)"] { background-color: rgba(9,54,179,0.25) !important; }
-          .admin-dark [style*="background-color: rgba(245,158,11,0.08)"] { background-color: rgba(245,158,11,0.18) !important; }
-          .admin-dark [style*="background-color: rgba(22,163,74,0.07)"] { background-color: rgba(22,163,74,0.18) !important; }
-          .admin-dark [style*="color: #0d0d14"] { color: #f1f5f9 !important; }
-          .admin-dark [style*="color: #374151"] { color: #cbd5e1 !important; }
-          .admin-dark [style*="color: #6b7280"] { color: #94a3b8 !important; }
-          .admin-dark [style*="color: #9ca3af"] { color: #64748b !important; }
-          .admin-dark [style*="color: #dc2626"] { color: #f87171 !important; }
-          .admin-dark [style*="color: #b45309"] { color: #fbbf24 !important; }
-          .admin-dark .text-gray-400 { color: #94a3b8 !important; }
-          .admin-dark .text-gray-700 { color: #cbd5e1 !important; }
-          .admin-dark .text-gray-500 { color: #94a3b8 !important; }
-          .admin-dark [style*="border: 1px solid rgba(0,0,0"] { border-color: rgba(255,255,255,0.08) !important; }
-          .admin-dark [style*="border: 1.5px solid rgba(0,0,0"] { border-color: rgba(255,255,255,0.1) !important; }
-          .admin-dark [style*="borderColor: \"rgba(0,0,0"] { border-color: rgba(255,255,255,0.08) !important; }
-          .admin-dark .border-b { border-color: rgba(255,255,255,0.07) !important; }
-          .admin-dark .border { border-color: rgba(255,255,255,0.1) !important; }
-          .admin-dark .border-t { border-color: rgba(255,255,255,0.07) !important; }
-          .admin-dark .divide-gray-100 > * + * { border-color: rgba(255,255,255,0.06) !important; }
-          .admin-dark input, .admin-dark textarea, .admin-dark select {
-            background-color: #162032 !important; color: #f1f5f9 !important;
-            border-color: rgba(255,255,255,0.1) !important;
-          }
-          .admin-dark input::placeholder, .admin-dark textarea::placeholder { color: #4b5d78 !important; }
-          .admin-dark .hover\\:bg-gray-50:hover { background-color: #273549 !important; }
-          .admin-dark .hover\\:bg-red-50:hover { background-color: rgba(239,68,68,0.1) !important; }
-          .admin-dark .hover\\:bg-blue-50:hover { background-color: rgba(59,130,246,0.1) !important; }
-          .admin-dark [style*="border-color: rgba(0,0,0"] { border-color: rgba(255,255,255,0.08) !important; }
-        `}</style>
-      )}
-
+    <div className="min-h-screen" style={{ backgroundColor: "#f4f6fb" }}>
       {/* Header */}
-      <div className="border-b shadow-sm sticky top-0 z-40" style={{ backgroundColor: isDark ? "#111827" : "#fff", borderColor: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)" }}>
+      <div className="bg-white border-b shadow-sm sticky top-0 z-40" style={{ borderColor: "rgba(0,0,0,0.08)" }}>
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <img src={logoImg} alt="Quiroga" className="h-9 object-contain" />
           <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.9rem", color: "#0936B3" }}>Panel Administrador</span>
-          <div className="flex items-center gap-3">
-            <button onClick={toggleDark} className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
-              style={{ backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)", color: isDark ? "#f1f5f9" : "#6b7280" }}
-              title={isDark ? "Modo claro" : "Modo oscuro"}>
-              {isDark ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
-            <button onClick={() => { sessionStorage.removeItem("quiroga_admin"); sessionStorage.removeItem("quiroga_admin_role"); navigate("/"); }}
-              className="flex items-center gap-1.5 transition-colors"
-              style={{ color: isDark ? "#94a3b8" : "#9ca3af" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#ef4444")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = isDark ? "#94a3b8" : "#9ca3af")}>
-              <LogOut size={16} />
-              <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.82rem" }}>Salir</span>
-            </button>
-          </div>
+          <button onClick={() => { sessionStorage.removeItem("quiroga_admin"); sessionStorage.removeItem("quiroga_admin_role"); navigate("/"); }}
+            className="flex items-center gap-1.5 text-gray-400 hover:text-red-500 transition-colors">
+            <LogOut size={16} />
+            <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.82rem" }}>Salir</span>
+          </button>
         </div>
       </div>
 

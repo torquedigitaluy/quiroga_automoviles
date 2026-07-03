@@ -37,7 +37,7 @@ export function StockVehiculos() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {filtered.slice(0, 6).map((v) => (
                 <StockCard key={v.id} vehicle={v} onOpen={(veh) => setSelectedCar(toCarDetail(veh))} />
               ))}
