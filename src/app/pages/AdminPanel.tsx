@@ -14,12 +14,18 @@ const ADMIN_PASS_FALLBACK = "quiroga2025";
 
 interface BasicUser { username: string; }
 
+async function hashPassword(plain: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(plain));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 async function dbLogin(username: string, password: string): Promise<"superadmin" | "basic" | null> {
+  const hashed = await hashPassword(password);
   const { data } = await supabase
     .from("admin_users")
     .select("role")
     .eq("username", username)
-    .eq("password", password)
+    .eq("password", hashed)
     .maybeSingle();
   return (data?.role as "superadmin" | "basic") ?? null;
 }
@@ -34,9 +40,10 @@ async function dbFetchBasicUsers(): Promise<BasicUser[]> {
 }
 
 async function dbCreateUser(username: string, password: string): Promise<string | null> {
+  const hashed = await hashPassword(password);
   const { error } = await supabase
     .from("admin_users")
-    .insert({ username, password, role: "basic" });
+    .insert({ username, password: hashed, role: "basic" });
   return error?.message ?? null;
 }
 
@@ -45,14 +52,16 @@ async function dbDeleteUser(username: string): Promise<void> {
 }
 
 async function dbChangePassword(username: string, currentPass: string, newPass: string): Promise<string | null> {
+  const hashedCurrent = await hashPassword(currentPass);
   const { data } = await supabase
     .from("admin_users")
     .select("id")
     .eq("username", username)
-    .eq("password", currentPass)
+    .eq("password", hashedCurrent)
     .maybeSingle();
   if (!data) return "Contraseña actual incorrecta.";
-  const { error } = await supabase.from("admin_users").update({ password: newPass }).eq("username", username);
+  const hashedNew = await hashPassword(newPass);
+  const { error } = await supabase.from("admin_users").update({ password: hashedNew }).eq("username", username);
   return error?.message ?? null;
 }
 
