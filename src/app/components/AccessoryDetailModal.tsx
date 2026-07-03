@@ -16,7 +16,7 @@ export function AccessoryDetailModal({ accessory, onClose }: Props) {
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4"
       style={{ backgroundColor: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="relative bg-white rounded-2xl overflow-hidden w-full max-w-3xl max-h-[94vh] flex flex-col shadow-2xl"
+      <div className="relative bg-white rounded-2xl overflow-hidden w-full max-w-3xl md:max-w-5xl lg:max-w-6xl max-h-[94vh] flex flex-col shadow-2xl"
         style={{ border: "1px solid rgba(0,0,0,0.08)" }}>
         <button onClick={onClose}
           className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full flex items-center justify-center bg-white/90 hover:bg-gray-100 transition-colors shadow"
@@ -26,11 +26,11 @@ export function AccessoryDetailModal({ accessory, onClose }: Props) {
 
         <div className="flex flex-col md:flex-row flex-1 min-h-0 overflow-y-auto md:overflow-hidden">
           {/* Gallery */}
-          <div className="md:w-1/2 flex-shrink-0 flex flex-col bg-white">
+          <div className="md:w-[65%] flex-shrink-0 flex flex-col bg-white">
             <div className="relative flex-1 flex items-center justify-center overflow-hidden bg-gray-50" style={{ minHeight: "280px" }}>
               {total > 0 ? (
                 <img key={activeIdx} src={accessory.images[activeIdx]} alt={`${accessory.name} ${activeIdx + 1}`}
-                  className="w-full h-full object-contain" style={{ maxHeight: "420px" }} />
+                  className="w-full h-full object-contain max-h-[420px] md:max-h-none" />
               ) : (
                 <span style={{ fontFamily: "'Poppins', sans-serif", color: "#9ca3af", fontSize: "0.85rem" }}>Sin imagen</span>
               )}
