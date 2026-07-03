@@ -1,14 +1,27 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
-import { Plus, Trash2, LogOut, Car, Upload, X, ImageIcon, Video, Eye, EyeOff, Star, Edit3, Check } from "lucide-react";
+import { Plus, Trash2, LogOut, Car, Upload, X, ImageIcon, Video, Eye, EyeOff, Star, Edit3, Check, Users, KeyRound } from "lucide-react";
 import { useVehicles, type CreateVehicleData } from "../contexts/VehiclesContext";
 import { SiteContentManager } from "./SiteContentManager";
 import { AccessoriesManager } from "./AccessoriesManager";
+import { CalculadoraFinanciacion } from "../components/CalculadoraFinanciacion";
 import { transcodeToH264 } from "../../lib/videoTranscode";
 import logoImg from "../../imports/LOGO_QUIROGA_AUTOMOVILES.png";
 
 const ADMIN_USER = "quiroga";
-const ADMIN_PASS = "quiroga2025";
+const ADMIN_PASS_DEFAULT = "quiroga2025";
+
+interface BasicUser { username: string; password: string; }
+
+function getSuperAdminPass(): string {
+  return localStorage.getItem("quiroga_super_pass") || ADMIN_PASS_DEFAULT;
+}
+function getStoredUsers(): BasicUser[] {
+  try { return JSON.parse(localStorage.getItem("quiroga_users") || "[]"); } catch { return []; }
+}
+function saveStoredUsers(users: BasicUser[]) {
+  localStorage.setItem("quiroga_users", JSON.stringify(users));
+}
 
 const EMPTY: CreateVehicleData = {
   marca: "", modelo: "", version: "", year: new Date().getFullYear(),
@@ -45,10 +58,20 @@ export function AdminLogin() {
 
   const login = (e: React.FormEvent) => {
     e.preventDefault();
-    if (user === ADMIN_USER && pass === ADMIN_PASS) {
+    if (user === ADMIN_USER && pass === getSuperAdminPass()) {
       sessionStorage.setItem("quiroga_admin", "1");
+      sessionStorage.setItem("quiroga_admin_role", "superadmin");
       navigate("/admin");
-    } else setErr("Usuario o contraseña incorrectos");
+      return;
+    }
+    const found = getStoredUsers().find((u) => u.username === user && u.password === pass);
+    if (found) {
+      sessionStorage.setItem("quiroga_admin", "1");
+      sessionStorage.setItem("quiroga_admin_role", "basic");
+      navigate("/admin");
+    } else {
+      setErr("Usuario o contraseña incorrectos");
+    }
   };
 
   return (
@@ -87,6 +110,12 @@ export function AdminPanel() {
   const [tcDraft, setTcDraft] = useState<number>(tipoCambio);
   const [tcSaving, setTcSaving] = useState(false);
   const [convertingVideo, setConvertingVideo] = useState(false);
+  const isSuperAdmin = sessionStorage.getItem("quiroga_admin_role") === "superadmin";
+  const [adminUsers, setAdminUsers] = useState<BasicUser[]>(getStoredUsers);
+  const [newUser, setNewUser] = useState({ username: "", password: "" });
+  const [userMsg, setUserMsg] = useState("");
+  const [changePwForm, setChangePwForm] = useState({ current: "", next: "", confirm: "" });
+  const [pwMsg, setPwMsg] = useState("");
   const [convertPct, setConvertPct] = useState<number | null>(null);
   const imgRef = useRef<HTMLInputElement>(null);
   const vidRef = useRef<HTMLInputElement>(null);
@@ -393,7 +422,7 @@ export function AdminPanel() {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <img src={logoImg} alt="Quiroga" className="h-9 object-contain" />
           <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.9rem", color: "#0936B3" }}>Panel Administrador</span>
-          <button onClick={() => { sessionStorage.removeItem("quiroga_admin"); navigate("/"); }}
+          <button onClick={() => { sessionStorage.removeItem("quiroga_admin"); sessionStorage.removeItem("quiroga_admin_role"); navigate("/"); }}
             className="flex items-center gap-1.5 text-gray-400 hover:text-red-500 transition-colors">
             <LogOut size={16} />
             <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.82rem" }}>Salir</span>
@@ -439,6 +468,93 @@ export function AdminPanel() {
             </button>
           </div>
         </div>
+
+        {/* User management — superadmin only */}
+        {isSuperAdmin && (
+          <div className="mb-6 rounded-2xl bg-white shadow-sm overflow-hidden" style={{ border: "1px solid rgba(0,0,0,0.07)" }}>
+            <div className="p-5 border-b flex items-center gap-2" style={{ borderColor: "rgba(0,0,0,0.07)" }}>
+              <Users size={17} style={{ color: "#0936B3" }} />
+              <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "1rem", color: "#0d0d14" }}>Usuarios del Panel</h2>
+            </div>
+            <div className="p-5 flex flex-col gap-6">
+              {/* User list */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between px-4 py-2.5 rounded-xl" style={{ backgroundColor: "#f0f4ff", border: "1px solid rgba(9,54,179,0.15)" }}>
+                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.85rem", color: "#0936B3" }}>{ADMIN_USER}</span>
+                  <span className="px-2 py-0.5 rounded-full text-xs" style={{ backgroundColor: "#0936B3", color: "#fff", fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}>SUPERADMIN</span>
+                </div>
+                {adminUsers.length === 0 ? (
+                  <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.8rem", color: "#9ca3af" }}>No hay usuarios básicos creados aún.</p>
+                ) : adminUsers.map((u) => (
+                  <div key={u.username} className="flex items-center justify-between px-4 py-2.5 rounded-xl" style={{ backgroundColor: "#f9fafb", border: "1px solid rgba(0,0,0,0.07)" }}>
+                    <div className="flex items-center gap-2">
+                      <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.85rem", color: "#374151" }}>{u.username}</span>
+                      <span className="px-2 py-0.5 rounded-full text-xs" style={{ backgroundColor: "#f3f4f6", color: "#6b7280", fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>BÁSICO</span>
+                    </div>
+                    <button onClick={() => {
+                      if (!confirm(`¿Eliminar usuario "${u.username}"?`)) return;
+                      const updated = adminUsers.filter((x) => x.username !== u.username);
+                      saveStoredUsers(updated); setAdminUsers(updated);
+                    }} className="text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Create user */}
+              <div>
+                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.7rem", letterSpacing: "0.1em", color: "#6b7280", marginBottom: "10px" }}>CREAR USUARIO BÁSICO</p>
+                <form className="flex flex-wrap gap-3 items-end" onSubmit={(e) => {
+                  e.preventDefault();
+                  const uname = newUser.username.trim();
+                  const upass = newUser.password.trim();
+                  if (!uname || !upass) return;
+                  if (uname === ADMIN_USER || adminUsers.some((u) => u.username === uname)) {
+                    setUserMsg("Ese nombre de usuario ya existe."); return;
+                  }
+                  const updated = [...adminUsers, { username: uname, password: upass }];
+                  saveStoredUsers(updated); setAdminUsers(updated);
+                  setNewUser({ username: "", password: "" });
+                  setUserMsg("Usuario creado."); setTimeout(() => setUserMsg(""), 3000);
+                }}>
+                  <div><label style={lbl}>USUARIO</label>
+                    <input value={newUser.username} onChange={(e) => setNewUser((p) => ({ ...p, username: e.target.value }))} style={{ ...inp, width: "150px" }} placeholder="nombre" required /></div>
+                  <div><label style={lbl}>CONTRASEÑA</label>
+                    <input type="password" value={newUser.password} onChange={(e) => setNewUser((p) => ({ ...p, password: e.target.value }))} style={{ ...inp, width: "150px" }} placeholder="••••••" required /></div>
+                  <button type="submit" className="px-5 py-2 rounded-xl hover:brightness-110 transition-all"
+                    style={{ backgroundColor: "#0936B3", color: "#fff", fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.82rem" }}>CREAR</button>
+                </form>
+                {userMsg && <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.8rem", color: "#0936B3", marginTop: "8px", fontWeight: 600 }}>{userMsg}</p>}
+              </div>
+
+              {/* Change superadmin password */}
+              <div className="border-t pt-5" style={{ borderColor: "rgba(0,0,0,0.07)" }}>
+                <div className="flex items-center gap-2 mb-3">
+                  <KeyRound size={14} style={{ color: "#6b7280" }} />
+                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.7rem", letterSpacing: "0.1em", color: "#6b7280" }}>CAMBIAR CONTRASEÑA (superadmin)</p>
+                </div>
+                <form className="flex flex-wrap gap-3 items-end" onSubmit={(e) => {
+                  e.preventDefault();
+                  if (changePwForm.current !== getSuperAdminPass()) { setPwMsg("Contraseña actual incorrecta."); return; }
+                  if (changePwForm.next.length < 4) { setPwMsg("La nueva contraseña debe tener al menos 4 caracteres."); return; }
+                  if (changePwForm.next !== changePwForm.confirm) { setPwMsg("Las contraseñas no coinciden."); return; }
+                  localStorage.setItem("quiroga_super_pass", changePwForm.next);
+                  setChangePwForm({ current: "", next: "", confirm: "" });
+                  setPwMsg("Contraseña actualizada."); setTimeout(() => setPwMsg(""), 3000);
+                }}>
+                  <div><label style={lbl}>ACTUAL</label>
+                    <input type="password" value={changePwForm.current} onChange={(e) => setChangePwForm((p) => ({ ...p, current: e.target.value }))} style={{ ...inp, width: "140px" }} placeholder="••••••" required /></div>
+                  <div><label style={lbl}>NUEVA</label>
+                    <input type="password" value={changePwForm.next} onChange={(e) => setChangePwForm((p) => ({ ...p, next: e.target.value }))} style={{ ...inp, width: "140px" }} placeholder="••••••" required /></div>
+                  <div><label style={lbl}>CONFIRMAR</label>
+                    <input type="password" value={changePwForm.confirm} onChange={(e) => setChangePwForm((p) => ({ ...p, confirm: e.target.value }))} style={{ ...inp, width: "140px" }} placeholder="••••••" required /></div>
+                  <button type="submit" className="px-5 py-2 rounded-xl hover:brightness-110 transition-all"
+                    style={{ backgroundColor: "#374151", color: "#fff", fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.82rem" }}>CAMBIAR</button>
+                </form>
+                {pwMsg && <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.8rem", color: "#0936B3", marginTop: "8px", fontWeight: 600 }}>{pwMsg}</p>}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Site content (hero + novedades) */}
         <SiteContentManager />
@@ -519,6 +635,9 @@ export function AdminPanel() {
             ))}
           </div>
         )}
+
+        {/* Calculadora de financiación propia */}
+        <CalculadoraFinanciacion />
       </div>
     </div>
   );

@@ -7,7 +7,6 @@ import { Services } from "./components/Services";
 import { StockVehiculos } from "./components/StockVehiculos";
 import { CotizadorVehiculo } from "./components/CotizadorVehiculo";
 import { Financiacion } from "./components/Financiacion";
-import { CalculadoraFinanciacion } from "./components/CalculadoraFinanciacion";
 import { Seguros } from "./components/Seguros";
 import { Taller } from "./components/Taller";
 import { Sucursales } from "./components/Sucursales";
@@ -53,7 +52,6 @@ function LandingPage() {
       <Hero />
       <Services />
       <StockVehiculos />
-      <CalculadoraFinanciacion />
       <Financiacion />
       <Seguros />
       <CotizadorVehiculo />
