@@ -40,3 +40,11 @@ export type AccessoryRow = {
   created_at: string;
   updated_at: string;
 };
+
+export type AdminUserRow = {
+  id: string;
+  username: string;
+  password: string;
+  role: "superadmin" | "basic";
+  created_at: string;
+};

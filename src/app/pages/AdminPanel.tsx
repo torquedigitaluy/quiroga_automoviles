@@ -6,21 +6,54 @@ import { SiteContentManager } from "./SiteContentManager";
 import { AccessoriesManager } from "./AccessoriesManager";
 import { CalculadoraFinanciacion } from "../components/CalculadoraFinanciacion";
 import { transcodeToH264 } from "../../lib/videoTranscode";
+import { supabase } from "../../lib/supabase";
 import logoImg from "../../imports/LOGO_QUIROGA_AUTOMOVILES.png";
 
 const ADMIN_USER = "quiroga";
-const ADMIN_PASS_DEFAULT = "quiroga2025";
+const ADMIN_PASS_FALLBACK = "quiroga2025";
 
-interface BasicUser { username: string; password: string; }
+interface BasicUser { username: string; }
 
-function getSuperAdminPass(): string {
-  return localStorage.getItem("quiroga_super_pass") || ADMIN_PASS_DEFAULT;
+async function dbLogin(username: string, password: string): Promise<"superadmin" | "basic" | null> {
+  const { data } = await supabase
+    .from("admin_users")
+    .select("role")
+    .eq("username", username)
+    .eq("password", password)
+    .maybeSingle();
+  return (data?.role as "superadmin" | "basic") ?? null;
 }
-function getStoredUsers(): BasicUser[] {
-  try { return JSON.parse(localStorage.getItem("quiroga_users") || "[]"); } catch { return []; }
+
+async function dbFetchBasicUsers(): Promise<BasicUser[]> {
+  const { data } = await supabase
+    .from("admin_users")
+    .select("username")
+    .eq("role", "basic")
+    .order("created_at");
+  return (data ?? []) as BasicUser[];
 }
-function saveStoredUsers(users: BasicUser[]) {
-  localStorage.setItem("quiroga_users", JSON.stringify(users));
+
+async function dbCreateUser(username: string, password: string): Promise<string | null> {
+  const { error } = await supabase
+    .from("admin_users")
+    .insert({ username, password, role: "basic" });
+  return error?.message ?? null;
+}
+
+async function dbDeleteUser(username: string): Promise<void> {
+  await supabase.from("admin_users").delete().eq("username", username).eq("role", "basic");
+}
+
+async function dbChangePassword(username: string, currentPass: string, newPass: string): Promise<string | null> {
+  const { data } = await supabase
+    .from("admin_users")
+    .select("id")
+    .eq("username", username)
+    .eq("password", currentPass)
+    .maybeSingle();
+  if (!data) return "Contraseña actual incorrecta.";
+  const { error } = await supabase.from("admin_users").update({ password: newPass }).eq("username", username);
+  return error?.message ?? null;
 }
 
 const EMPTY: CreateVehicleData = {
@@ -55,22 +88,37 @@ export function AdminLogin() {
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
   const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const login = (e: React.FormEvent) => {
+  const login = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (user === ADMIN_USER && pass === getSuperAdminPass()) {
-      sessionStorage.setItem("quiroga_admin", "1");
-      sessionStorage.setItem("quiroga_admin_role", "superadmin");
-      navigate("/admin");
-      return;
-    }
-    const found = getStoredUsers().find((u) => u.username === user && u.password === pass);
-    if (found) {
-      sessionStorage.setItem("quiroga_admin", "1");
-      sessionStorage.setItem("quiroga_admin_role", "basic");
-      navigate("/admin");
-    } else {
+    setLoading(true); setErr("");
+    try {
+      const role = await dbLogin(user, pass);
+      if (role) {
+        sessionStorage.setItem("quiroga_admin", "1");
+        sessionStorage.setItem("quiroga_admin_role", role);
+        navigate("/admin");
+        return;
+      }
+      // Fallback en caso de que la tabla admin_users aún no exista
+      if (user === ADMIN_USER && pass === ADMIN_PASS_FALLBACK) {
+        sessionStorage.setItem("quiroga_admin", "1");
+        sessionStorage.setItem("quiroga_admin_role", "superadmin");
+        navigate("/admin");
+        return;
+      }
       setErr("Usuario o contraseña incorrectos");
+    } catch {
+      if (user === ADMIN_USER && pass === ADMIN_PASS_FALLBACK) {
+        sessionStorage.setItem("quiroga_admin", "1");
+        sessionStorage.setItem("quiroga_admin_role", "superadmin");
+        navigate("/admin");
+      } else {
+        setErr("Error de conexión. Verificá tu internet.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,9 +133,9 @@ export function AdminLogin() {
           <div><label style={lbl}>USUARIO</label><input value={user} onChange={(e) => setUser(e.target.value)} required style={inp} placeholder="Usuario" /></div>
           <div><label style={lbl}>CONTRASEÑA</label><input type="password" value={pass} onChange={(e) => setPass(e.target.value)} required style={inp} placeholder="Contraseña" /></div>
           {err && <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.82rem", color: "#dc2626" }}>{err}</p>}
-          <button type="submit" className="py-3 rounded-xl transition-all hover:brightness-110 mt-1"
+          <button type="submit" disabled={loading} className="py-3 rounded-xl transition-all hover:brightness-110 mt-1 disabled:opacity-60"
             style={{ backgroundColor: "#0936B3", color: "#fff", fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}>
-            INGRESAR
+            {loading ? "VERIFICANDO..." : "INGRESAR"}
           </button>
         </form>
       </div>
@@ -111,11 +159,18 @@ export function AdminPanel() {
   const [tcSaving, setTcSaving] = useState(false);
   const [convertingVideo, setConvertingVideo] = useState(false);
   const isSuperAdmin = sessionStorage.getItem("quiroga_admin_role") === "superadmin";
-  const [adminUsers, setAdminUsers] = useState<BasicUser[]>(getStoredUsers);
+  const [adminUsers, setAdminUsers] = useState<BasicUser[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
   const [newUser, setNewUser] = useState({ username: "", password: "" });
   const [userMsg, setUserMsg] = useState("");
   const [changePwForm, setChangePwForm] = useState({ current: "", next: "", confirm: "" });
   const [pwMsg, setPwMsg] = useState("");
+
+  useEffect(() => {
+    if (!isSuperAdmin) return;
+    setUsersLoading(true);
+    dbFetchBasicUsers().then(setAdminUsers).finally(() => setUsersLoading(false));
+  }, [isSuperAdmin]);
   const [convertPct, setConvertPct] = useState<number | null>(null);
   const imgRef = useRef<HTMLInputElement>(null);
   const vidRef = useRef<HTMLInputElement>(null);
@@ -483,7 +538,9 @@ export function AdminPanel() {
                   <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.85rem", color: "#0936B3" }}>{ADMIN_USER}</span>
                   <span className="px-2 py-0.5 rounded-full text-xs" style={{ backgroundColor: "#0936B3", color: "#fff", fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}>SUPERADMIN</span>
                 </div>
-                {adminUsers.length === 0 ? (
+                {usersLoading ? (
+                  <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.8rem", color: "#9ca3af" }}>Cargando...</p>
+                ) : adminUsers.length === 0 ? (
                   <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.8rem", color: "#9ca3af" }}>No hay usuarios básicos creados aún.</p>
                 ) : adminUsers.map((u) => (
                   <div key={u.username} className="flex items-center justify-between px-4 py-2.5 rounded-xl" style={{ backgroundColor: "#f9fafb", border: "1px solid rgba(0,0,0,0.07)" }}>
@@ -491,10 +548,10 @@ export function AdminPanel() {
                       <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.85rem", color: "#374151" }}>{u.username}</span>
                       <span className="px-2 py-0.5 rounded-full text-xs" style={{ backgroundColor: "#f3f4f6", color: "#6b7280", fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>BÁSICO</span>
                     </div>
-                    <button onClick={() => {
+                    <button onClick={async () => {
                       if (!confirm(`¿Eliminar usuario "${u.username}"?`)) return;
-                      const updated = adminUsers.filter((x) => x.username !== u.username);
-                      saveStoredUsers(updated); setAdminUsers(updated);
+                      await dbDeleteUser(u.username);
+                      setAdminUsers((p) => p.filter((x) => x.username !== u.username));
                     }} className="text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
                   </div>
                 ))}
@@ -503,16 +560,14 @@ export function AdminPanel() {
               {/* Create user */}
               <div>
                 <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.7rem", letterSpacing: "0.1em", color: "#6b7280", marginBottom: "10px" }}>CREAR USUARIO BÁSICO</p>
-                <form className="flex flex-wrap gap-3 items-end" onSubmit={(e) => {
+                <form className="flex flex-wrap gap-3 items-end" onSubmit={async (e) => {
                   e.preventDefault();
                   const uname = newUser.username.trim();
                   const upass = newUser.password.trim();
                   if (!uname || !upass) return;
-                  if (uname === ADMIN_USER || adminUsers.some((u) => u.username === uname)) {
-                    setUserMsg("Ese nombre de usuario ya existe."); return;
-                  }
-                  const updated = [...adminUsers, { username: uname, password: upass }];
-                  saveStoredUsers(updated); setAdminUsers(updated);
+                  const err = await dbCreateUser(uname, upass);
+                  if (err) { setUserMsg(err.includes("duplicate") ? "Ese nombre de usuario ya existe." : err); return; }
+                  setAdminUsers((p) => [...p, { username: uname }]);
                   setNewUser({ username: "", password: "" });
                   setUserMsg("Usuario creado."); setTimeout(() => setUserMsg(""), 3000);
                 }}>
@@ -532,12 +587,12 @@ export function AdminPanel() {
                   <KeyRound size={14} style={{ color: "#6b7280" }} />
                   <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.7rem", letterSpacing: "0.1em", color: "#6b7280" }}>CAMBIAR CONTRASEÑA (superadmin)</p>
                 </div>
-                <form className="flex flex-wrap gap-3 items-end" onSubmit={(e) => {
+                <form className="flex flex-wrap gap-3 items-end" onSubmit={async (e) => {
                   e.preventDefault();
-                  if (changePwForm.current !== getSuperAdminPass()) { setPwMsg("Contraseña actual incorrecta."); return; }
                   if (changePwForm.next.length < 4) { setPwMsg("La nueva contraseña debe tener al menos 4 caracteres."); return; }
                   if (changePwForm.next !== changePwForm.confirm) { setPwMsg("Las contraseñas no coinciden."); return; }
-                  localStorage.setItem("quiroga_super_pass", changePwForm.next);
+                  const err = await dbChangePassword(ADMIN_USER, changePwForm.current, changePwForm.next);
+                  if (err) { setPwMsg(err); return; }
                   setChangePwForm({ current: "", next: "", confirm: "" });
                   setPwMsg("Contraseña actualizada."); setTimeout(() => setPwMsg(""), 3000);
                 }}>
