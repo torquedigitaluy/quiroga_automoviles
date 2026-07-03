@@ -32,7 +32,7 @@ export function StockCard({ vehicle, onOpen }: Props) {
       onClick={() => onOpen(vehicle)}
     >
       {/* Image — 9:16 */}
-      <div className="relative overflow-hidden bg-gray-100" style={{ aspectRatio: "9/16", maxHeight: "360px" }}>
+      <div className="relative overflow-hidden bg-gray-100 h-64 sm:h-auto" style={{ aspectRatio: "9/16", maxHeight: "360px" }}>
         <img src={vehicle.images[0]} alt={vehicle.name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         {vehicle.images.length > 1 && (
