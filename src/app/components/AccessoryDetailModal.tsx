@@ -61,7 +61,7 @@ export function AccessoryDetailModal({ accessory, onClose }: Props) {
           </div>
 
           {/* Info */}
-          <div className="flex-1 p-6 flex flex-col gap-4">
+          <div className="flex-1 p-6 flex flex-col gap-4 md:overflow-y-auto">
             <div>
               <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "1.4rem", color: "#0936B3", lineHeight: 1.1 }}>
                 {accessory.name}
