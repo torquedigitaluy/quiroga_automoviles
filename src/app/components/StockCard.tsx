@@ -72,9 +72,11 @@ export function StockCard({ vehicle, onOpen }: Props) {
 
         {/* Financing banner — blue border, below image */}
         <div className="rounded-xl px-3 py-2 text-center" style={{ border: "1.5px solid #0936B3" }}>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.6rem", color: "#0936B3", lineHeight: 1.4 }}>
-            Financiación propia con entrega del 50% del valor del vehículo
-          </p>
+          {vehicle.type === "usado" && (
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.6rem", color: "#0936B3", lineHeight: 1.4 }}>
+              Financiación propia con entrega del 50% del valor del vehículo
+            </p>
+          )}
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.6rem", color: "#0936B3", lineHeight: 1.4 }}>
             100% Financiación Bancaria
           </p>
