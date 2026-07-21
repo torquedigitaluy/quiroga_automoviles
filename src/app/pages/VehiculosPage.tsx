@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Search } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
 import { useVehicles } from "../contexts/VehiclesContext";
 import { StockCard } from "../components/StockCard";
@@ -26,6 +26,7 @@ export function VehiculosPage() {
   const { vehicles, loading } = useVehicles();
   const [filterType, setFilterType] = useState<"todos" | "nuevo" | "usado" | "electrico">("todos");
   const [maxPrice, setMaxPrice] = useState(MAX_PRICE);
+  const [search, setSearch] = useState("");
   const [selectedCar, setSelectedCar] = useState<CarDetail | null>(null);
 
   // Deep link from the "Compartir" button (/autos/:slug, e.g.
@@ -40,10 +41,12 @@ export function VehiculosPage() {
     navigate("/autos", { replace: true });
   }, [slug, loading, vehicles, navigate]);
 
+  const q = search.trim().toLowerCase();
   const filtered = vehicles.filter((v) => {
     if (filterType === "electrico") return v.fuel === "Eléctrico";
     if (filterType !== "todos" && v.type !== filterType) return false;
     if (v.priceNum > 0 && v.priceNum > maxPrice) return false;
+    if (q && !v.name.toLowerCase().includes(q) && !String(v.year).includes(q)) return false;
     return true;
   });
 
@@ -75,20 +78,49 @@ export function VehiculosPage() {
         </h1>
 
         {/* Filters */}
-        <div className="flex flex-wrap items-center gap-3 mb-8 p-4 rounded-2xl" style={{ backgroundColor: "#f4f6fb" }}>
-          <div className="flex flex-wrap gap-2">
-            {(["todos", "usado", "nuevo", "electrico"] as const).map((f) => (
-              <button key={f} onClick={() => setFilterType(f)} style={filterBtnStyle(filterType === f)}>
-                {f === "todos" ? "TODOS" : f === "nuevo" ? "0 KM" : f === "usado" ? "USADOS" : "⚡ ELÉCTRICOS"}
+        <div className="flex flex-col gap-3 mb-8 p-4 rounded-2xl" style={{ backgroundColor: "#f4f6fb" }}>
+          {/* Search */}
+          <div className="relative">
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "#0936B3" }} />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por marca, modelo, año..."
+              style={{
+                fontFamily: "'Poppins', sans-serif", fontSize: "0.88rem", fontWeight: 500, color: "#0d0d14",
+                backgroundColor: "#fff", border: "1.5px solid #0936B3", borderRadius: "12px",
+                padding: "10px 14px 10px 38px", width: "100%", outline: "none",
+              }}
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                style={{ fontFamily: "'Poppins', sans-serif", fontSize: "1rem", lineHeight: 1 }}
+                aria-label="Limpiar búsqueda"
+              >
+                ×
               </button>
-            ))}
+            )}
           </div>
-          <div className="flex items-center gap-3 ml-auto flex-wrap">
-            <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.78rem", color: "#6b7280" }}>
-              Precio máx: {maxPrice >= MAX_PRICE ? "Sin límite" : `USD ${maxPrice.toLocaleString()}`}
-            </span>
-            <input type="range" min={5000} max={MAX_PRICE} step={1000} value={maxPrice}
-              onChange={(e) => setMaxPrice(+e.target.value)} style={{ accentColor: "#0936B3", width: "140px" }} />
+
+          {/* Type filters + price */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap gap-2">
+              {(["todos", "usado", "nuevo", "electrico"] as const).map((f) => (
+                <button key={f} onClick={() => setFilterType(f)} style={filterBtnStyle(filterType === f)}>
+                  {f === "todos" ? "TODOS" : f === "nuevo" ? "0 KM" : f === "usado" ? "USADOS" : "⚡ ELÉCTRICOS"}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-3 ml-auto flex-wrap">
+              <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.78rem", color: "#6b7280" }}>
+                Precio máx: {maxPrice >= MAX_PRICE ? "Sin límite" : `USD ${maxPrice.toLocaleString()}`}
+              </span>
+              <input type="range" min={5000} max={MAX_PRICE} step={1000} value={maxPrice}
+                onChange={(e) => setMaxPrice(+e.target.value)} style={{ accentColor: "#0936B3", width: "140px" }} />
+            </div>
           </div>
         </div>
 
