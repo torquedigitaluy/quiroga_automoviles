@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { X, ChevronLeft, ChevronRight, CheckCircle2, Play } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, CheckCircle2, Play, Share2 } from "lucide-react";
 
 export interface CarDetail {
   id: number;
+  slug?: string;
   name: string;
   year: number;
   price: string;
@@ -66,12 +67,25 @@ export function CarDetailModal({ car, onClose }: Props) {
   const typeLabel = isNew ? "0 KM" : "Usado";
   const waText = encodeURIComponent(car.whatsappText);
 
+  const handleShare = () => {
+    const url = car.slug
+      ? `${window.location.origin}/autos/${car.slug}`
+      : `${window.location.origin}/autos`;
+    if (navigator.share) navigator.share({ title: car.name, url });
+    else { navigator.clipboard.writeText(url); alert("Enlace copiado"); }
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4"
       style={{ backgroundColor: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="relative bg-white rounded-2xl overflow-hidden w-full max-w-5xl md:max-w-6xl lg:max-w-7xl max-h-[94vh] flex flex-col shadow-2xl"
         style={{ border: "1px solid rgba(0,0,0,0.08)" }}>
+        <button onClick={handleShare}
+          className="absolute top-4 right-14 z-20 w-9 h-9 rounded-full flex items-center justify-center bg-white/90 hover:bg-white transition-colors shadow"
+          aria-label="Compartir">
+          <Share2 size={15} style={{ color: "#0936B3" }} />
+        </button>
         <button onClick={onClose}
           className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full flex items-center justify-center bg-white/90 hover:bg-gray-100 transition-colors shadow"
           aria-label="Cerrar">

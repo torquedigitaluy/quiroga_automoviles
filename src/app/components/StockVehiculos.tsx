@@ -4,10 +4,12 @@ import { StockCard } from "./StockCard";
 import { CarDetailModal } from "./CarDetailModal";
 import type { Vehicle } from "../contexts/VehiclesContext";
 import type { CarDetail } from "./CarDetailModal";
+import { vehicleSlug } from "../../lib/slug";
 
 function toCarDetail(v: Vehicle): CarDetail {
   return {
     id: typeof v.id === "string" ? parseInt(v.id) || 0 : v.id,
+    slug: vehicleSlug(v),
     name: v.name, year: v.year, price: v.price, moneda: v.moneda, km: v.km,
     fuel: v.fuel, transmission: v.transmission, badge: v.badge,
     images: v.images, videos: v.videos, features: v.features, description: v.description, whatsappText: v.whatsappText,
@@ -24,10 +26,15 @@ export function StockVehiculos() {
     <section id="stock" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
-        <div className="mb-10">
+        <div className="mb-10 flex items-center justify-between gap-4 flex-wrap">
           <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 900, fontSize: "clamp(2rem, 4vw, 3rem)", color: "#0936B3", lineHeight: 0.95, letterSpacing: "-0.01em" }}>
             VEHÍCULOS DESTACADOS
           </h2>
+          <a href="/autos"
+            className="flex-shrink-0 flex items-center gap-2 px-7 py-3 rounded-full border-2 transition-all text-[#0936B3] hover:bg-[#0936B3] hover:text-white hover:border-[#0936B3]"
+            style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.9rem", borderColor: "#0936B3" }}>
+            VER TODOS
+          </a>
         </div>
 
         {/* Grid — 3 cols, 6 vehicles */}
@@ -43,13 +50,6 @@ export function StockVehiculos() {
               ))}
             </div>
 
-            <div className="mt-12 flex justify-center">
-              <a href="/autos"
-                className="flex items-center gap-2 px-10 py-4 rounded-full border-2 transition-all text-[#0936B3] hover:bg-[#0936B3] hover:text-white hover:border-[#0936B3]"
-                style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "1rem", borderColor: "#0936B3" }}>
-                Ver Vehículos
-              </a>
-            </div>
           </>
         )}
       </div>

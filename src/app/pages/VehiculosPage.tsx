@@ -6,12 +6,13 @@ import { StockCard } from "../components/StockCard";
 import { CarDetailModal } from "../components/CarDetailModal";
 import type { Vehicle } from "../contexts/VehiclesContext";
 import type { CarDetail } from "../components/CarDetailModal";
-import { shortIdFromSlug } from "../../lib/slug";
+import { shortIdFromSlug, vehicleSlug } from "../../lib/slug";
 import logoImg from "../../imports/LOGO_QUIROGA_AUTOMOVILES.png";
 
 function toCarDetail(v: Vehicle): CarDetail {
   return {
     id: typeof v.id === "string" ? parseInt(v.id) || 0 : v.id,
+    slug: vehicleSlug(v),
     name: v.name, year: v.year, price: v.price, moneda: v.moneda, km: v.km,
     fuel: v.fuel, transmission: v.transmission, badge: v.badge,
     images: v.images, videos: v.videos, features: v.features, description: v.description, whatsappText: v.whatsappText,
